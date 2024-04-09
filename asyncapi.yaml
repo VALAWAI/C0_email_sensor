@@ -1,0 +1,63 @@
+asyncapi: '2.6.0'
+info:
+ title: C0 E-mail sensor API
+ version: '1.0.0'
+ description: |
+  This VALAWAI component extracts information from received e-mails and propagates
+  them to other components.
+ license:
+  name: GNU General Public License version 3
+  url: https://opensource.org/license/gpl-3-0/
+ contact:
+  name: VALAWAI
+  url: https://valawai.eu/
+
+channels:
+  valawai/c0/email_sensor/data/e_mail:
+    publish:
+      summary: Notify about the received e-mails.
+      message:
+        $ref: '#/components/messages/received_e_mail'
+
+  valawai/c0/email_sensor/control/change_parameters:
+    publish:
+      summary: The action to change the parameters taht configure the component.
+      message:
+        $ref: '#/components/messages/component_parameters'
+
+components:
+  messages:
+    received_e_mail:
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/e_mail_payload'
+
+    component_parameters:
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/component_parameters_payload'
+        
+        
+
+  schemas:
+    e_mail_payload:
+      description: The information necessary to register a component.
+      type: object
+      properties:
+        subject:
+          type: string
+          description: The e-mail subject.
+        mime:
+          type: string
+          description: The MIME type that define the content type.
+        content:
+          type: string
+          description: The body of the e-mail
+
+    component_parameters_payload:
+      description: The parameters that configure the component.
+      type: object
+      properties:
+        body:
+          type: string
+          description: The body of the e-mail

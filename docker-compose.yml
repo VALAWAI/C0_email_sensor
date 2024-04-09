@@ -1,0 +1,89 @@
+version: '3.7'
+services:
+  email_sensor:
+    image: valawai/c0_email_sensor:${C0_EMAIL_SENSOR_TAG:-latest}
+    container_name: c0_email_sensor
+    networks:  
+      - email_sensor
+    depends_on:
+      mov:
+        condition: service_completed_successfully
+        required: false
+      mail:
+        condition: service_completed_successfully
+        required: false
+    environment:
+      RABBITMQ_HOST: mq
+      RABBITMQ_PORT: ${MQ_PORT:-5672}
+      RABBITMQ_USERNAME: ${MQ_USER:-mov}
+      RABBITMQ_PASSWORD: ${MQ_PASSWORD:-password}
+
+  mail:
+    image: dbck/mailtrap:${MAILTRAP_TAG:-latest}
+    container_name: email_sensor_mail
+    profiles: [mail]
+    ports:
+      - "${MAIL_PORT:-1025}:25"
+      - "${MAIL_IMAP:-1143}:143"
+      - "${MAIL_IMAPS:-1993}:993"
+      - "${MAIL_WEB:-1080}:80"
+    networks:
+      - email_sensor
+    environment:
+      MAILTRAP_USER: ${MAIL_USER_NAME:-user}
+      MAILTRAP_PASSWORD: ${MAIL_USER_PASSWORD:-password}
+
+  mq:
+    image: rabbitmq:${RABBITMQ_TAG:-management}
+    container_name: mov_mq
+    profiles: [mov]
+    ports:
+      - ${MQ_PORT:-5672}:5672
+      - ${MQ_UI_PORT:-8081}:15672
+    networks:
+      - email_sensor
+    environment:
+      RABBITMQ_DEFAULT_USER: ${MQ_USER:-mov}
+      RABBITMQ_DEFAULT_PASS: ${MQ_PASSWORD:-password}
+
+  mongo:
+    image: mongo:${MONGODB_TAG:-latest}
+    container_name: mov_db
+    profiles: [mov]
+    ports:
+      - ${MONGO_PORT:-27017}:27017
+    networks:
+      - email_sensor
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: ${DB_NAME:-movDB}
+      DB_NAME: ${DB_NAME:-movDB}
+      DB_USER_NAME: ${DB_USER_NAME:-mov}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-password}
+    volumes:
+      - src/deploy/docker/initialize-movDB.js:/docker-entrypoint-initdb.d/init-mongo.js
+      - ${MONGO_LOCAL_DATA:-~/mongo_data/emailSensorMovDB}:/data/db
+  mov:
+    image: valawai/mov:${MOV_TAG:-latest}
+    container_name: mov
+    profiles: [mov]
+    depends_on:
+      - mongo
+      - mq
+    ports:
+      - ${MOV_UI_PORT:-8080}:8080
+    networks:  
+      - email_sensor
+    environment:
+      RABBITMQ_HOST: mq
+      RABBITMQ_PORT: ${MQ_PORT:-5672}
+      RABBITMQ_USERNAME: ${MQ_USER:-mov}
+      RABBITMQ_PASSWORD: ${MQ_PASSWORD:-password}
+      QUARKUS_MONGODB_DATABASE: ${DB_NAME:-movDB}
+      QUARKUS_MONGODB_CREDENTIALS_USERNAME: ${DB_USER_NAME:-mov}
+      QUARKUS_MONGODB_CREDENTIALS_PASSWORD: ${DB_USER_PASSWORD:-password}
+      QUARKUS_MONGODB_HOSTS: mongo:${MONGO_PORT:-27017}
+
+networks:
+  email_sensor:
