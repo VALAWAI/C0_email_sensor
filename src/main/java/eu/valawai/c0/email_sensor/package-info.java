@@ -12,4 +12,4 @@
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.valawai.co.email_sensor;
+package eu.valawai.c0.email_sensor;

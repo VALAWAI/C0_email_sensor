@@ -1,8 +1,7 @@
-version: '3.7'
 services:
   mq:
-    image: rabbitmq:management
-    container_name: c0_email_sensor_mq_dev
+    image: rabbitmq:${RABBITMQ_TAG:-management}
+    container_name: mov_mq_dev
     restart: unless-stopped
     ports:
       - ${MQ_PORT:-5672}:5672
@@ -10,11 +9,11 @@ services:
     networks:
       - c0_email_sensor_dev
     environment:
-      RABBITMQ_DEFAULT_USER: ${MQ_USER:-c0_email_sensor}
+      RABBITMQ_DEFAULT_USER: ${MQ_USER:-mov}
       RABBITMQ_DEFAULT_PASS: ${MQ_PASSWORD:-password}
   mongo:
-    image: mongo:latest
-    container_name: c0_email_sensor_db_dev
+    image: mongo:${MONGO_TAG:-latest}
+    container_name: mov_db_dev
     restart: unless-stopped
     ports:
       - ${MONGO_PORT:-27017}:27017
@@ -23,13 +22,13 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-root}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
-      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-c0_email_sensorDB}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-movDB}
     volumes:
-      - ./initialize-c0_email_sensorDB.js:/docker-entrypoint-initdb.d/init-mongo.js
-      - ${MONGO_LOCAL_DATA:-~/mongo_data/c0_email_sensorDB}:/data/db
+      - ./initialize-movDB.js:/docker-entrypoint-initdb.d/init-mongo.js
+      - ${MONGO_LOCAL_DATA:-~/mongo_data/movDB}:/data/db
   mongo_express:
-    image: mongo-express:latest
-    container_name: c0_email_sensor_db_ui_dev
+    image: mongo-express:${MONGO_EXPRESS_TAG:-latest}
+    container_name: mov_db_ui_dev
     restart: unless-stopped
     depends_on:
       - mongo
@@ -44,6 +43,27 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD:-password}
       ME_CONFIG_MONGODB_PORT: ${MONGO_PORT:-27017}
       ME_CONFIG_MONGODB_SERVER: mongo
+  mov:
+    image: valawai/mov:${MOV_TAG:-latest}
+    container_name: mov_dev
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - mq
+    ports:
+      - ${MOV_UI_PORT:-8083}:8080
+    networks:  
+      - c0_email_sensor_dev
+    environment:
+      RABBITMQ_HOST: mq
+      RABBITMQ_PORT: ${MQ_PORT:-5672}
+      RABBITMQ_USERNAME: ${MQ_USER:-mov}
+      RABBITMQ_PASSWORD: ${MQ_PASSWORD:-password}
+      QUARKUS_MONGODB_DATABASE: ${DB_NAME:-movDB}
+      QUARKUS_MONGODB_CREDENTIALS_USERNAME: ${DB_USER_NAME:-mov}
+      QUARKUS_MONGODB_CREDENTIALS_PASSWORD: ${DB_USER_PASSWORD:-password}
+      QUARKUS_MONGODB_HOSTS: mongo:${MONGO_PORT:-27017}
+      MOV_URL: http://localhost:${MOV_UI_PORT:-8083}
 
 networks:
   c0_email_sensor_dev:
