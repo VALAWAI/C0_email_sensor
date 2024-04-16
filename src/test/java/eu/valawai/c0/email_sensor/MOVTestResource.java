@@ -18,7 +18,7 @@ import org.testcontainers.utility.MountableFile;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 /**
- * The test resource taht runs thge Master Of VALAWAI that can be used to test
+ * The test resource that runs the Master Of VALAWAI that can be used to test
  * the component.
  *
  * @author VALAWAI
