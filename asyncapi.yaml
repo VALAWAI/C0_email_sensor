@@ -51,19 +51,46 @@ components:
 
   schemas:
     e_mail_payload:
-      description: The information necessary to register a component.
+      description: The payload that contains the information of an e-mail.
       type: object
       properties:
+        address:
+          type: array
+          description: The e-mail subject.
+          itemas:
+            - $ref: '#/components/schemas/e_mail_address_payload'
         subject:
           type: string
           description: The e-mail subject.
-        mime:
+        mime_type:
           type: string
-          description: The MIME type that define the content type.
+          description: The MIME type associated to the e-mail content.
         content:
           type: string
-          description: The body of the e-mail
-
+          description: The content of the e-mail.
+        received_at:
+          type: integer
+          description: The epoch time, in seconds, when the email is received.
+          
+    e_mail_address_payload:
+      description: Describe the address associated to an e-mail.
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of address.
+          enum:
+            - FROM
+            - TO
+            - CC
+            - BCC
+        name:
+          type: string
+          description: The name of the user.
+        address:
+          type: string
+          description: The e-mail address.
+          
     component_parameters_payload:
       description: The parameters that configure the component.
       type: object
