@@ -34,16 +34,26 @@ public class EMailPayloadTest extends PayloadTestCase<EMailPayload> {
 	@Override
 	public void fillIn(EMailPayload payload) {
 
-		final var max = rnd.nextInt(0, 5);
-		if (max > 0) {
+		final var max = rnd.nextInt(1, 5);
+		payload.addresses = new ArrayList<>();
 
-			payload.addresses = new ArrayList<>();
-			final var builder = new EMailAddressPayloadTest();
-			for (var i = 0; i < max; i++) {
+		final var builder = new EMailAddressPayloadTest();
+		for (var i = 0; i < max; i++) {
 
-				final var address = builder.nextModel();
-				payload.addresses.add(address);
+			final var address = builder.nextModel();
+			if (i == 0) {
+
+				address.type = EMailAddressType.FROM;
+
+			} else {
+
+				final var values = EMailAddressType.values();
+				while (address.type == EMailAddressType.FROM) {
+
+					address.type = values[rnd.nextInt(0, values.length)];
+				}
 			}
+			payload.addresses.add(address);
 		}
 		payload.subject = "Subject " + rnd.nextInt(0, 10000);
 		payload.mime_type = "text/plain";

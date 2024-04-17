@@ -29,11 +29,22 @@ public class MailTestResource implements QuarkusTestResourceLifecycleManager {
 	public static final String MAIL_TRAPPER_DOCKER_NAME = "dbck/mailtrap:latest";
 
 	/**
+	 * The user name to connect to the mail server.
+	 */
+	private static final String MAIL_USER_NAME = "mailtrap";
+
+	/**
+	 * The user password to connect to the mail server.
+	 */
+	private static final String MAIL_USER_PASSWORD = "password";
+
+	/**
 	 * The mongo service container.
 	 */
 	static GenericContainer<?> mailContainer = new GenericContainer<>(DockerImageName.parse(MAIL_TRAPPER_DOCKER_NAME))
-			.withStartupAttempts(1).withEnv("MAILTRAP_USER", "mailtrap").withEnv("MAILTRAP_PASSWORD", "password")
-			.withExposedPorts(587, 993).waitingFor(Wait.forListeningPort());
+			.withStartupAttempts(1).withEnv("MAILTRAP_USER", MAIL_USER_NAME)
+			.withEnv("MAILTRAP_PASSWORD", MAIL_USER_PASSWORD).withExposedPorts(25, 993)
+			.waitingFor(Wait.forListeningPort());
 
 	/**
 	 * Start the mocked server.
@@ -44,19 +55,16 @@ public class MailTestResource implements QuarkusTestResourceLifecycleManager {
 	public Map<String, String> start() {
 
 		final var config = new HashMap<String, String>();
+		config.put("mail.username", MAIL_USER_NAME);
+		config.put("mail.userpassword", MAIL_USER_PASSWORD);
 
-		if (Boolean.parseBoolean(System.getProperty("useDevMailtrap"))) {
-
-			config.put("quarkus.mailer.host", "host.docker.internal");
-			config.put("mail.host", "host.docker.internal");
-
-		} else {
+		if (!Boolean.parseBoolean(System.getProperty("useDevMail"))) {
 
 			mailContainer.start();
-			config.put("quarkus.mailer.host", mailContainer.getHost());
-			config.put("quarkus.mailer.port", String.valueOf(mailContainer.getMappedPort(587)));
-			config.put("mail.host", mailContainer.getHost());
+			final var host = mailContainer.getHost();
+			config.put("mail.host", host);
 			config.put("mail.port", String.valueOf(mailContainer.getMappedPort(993)));
+			config.put("mail.smtp.port", String.valueOf(mailContainer.getMappedPort(25)));
 		}
 
 		return config;

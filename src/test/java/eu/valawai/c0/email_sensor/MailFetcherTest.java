@@ -14,8 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Random;
 
-import javax.inject.Inject;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
@@ -23,9 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.vertx.core.json.Json;
+import jakarta.inject.Inject;
 
 /**
  * Test the {@link MailFetcher}.
@@ -39,16 +42,16 @@ import io.quarkus.test.junit.QuarkusTest;
 public class MailFetcherTest {
 
 	/**
-	 * The component to send e-mails.
-	 */
-	@Inject
-	ReactiveMailer mailer;
-
-	/**
 	 * The service to test.
 	 */
 	@Inject
 	MailFetcher service;
+
+	/**
+	 * The service to send e-mails.
+	 */
+	@Inject
+	MailSender sender;
 
 	/**
 	 * Should not obtain the payload address from {@code null}.
@@ -67,7 +70,7 @@ public class MailFetcherTest {
 	 * @param email expected payload address.
 	 */
 	@ParameterizedTest(name = "Should obtain the payload from {0}")
-	@CsvSource("""
+	@CsvSource(textBlock = """
 			bob smith <bob@example.com>, bob smith, bob@example.com
 			bob smith <bob@example.com> (Bobby), bob smith (Bobby), bob@example.com
 			<bob@example.com> (Bobby), (Bobby), bob@example.com
@@ -113,7 +116,7 @@ public class MailFetcherTest {
 	 * @throws UnsupportedEncodingException If the address is not valid.
 	 */
 	@ParameterizedTest(name = "Should obtain the payload from {0}")
-	@CsvSource("""
+	@CsvSource(textBlock = """
 			bob smith, bob@example.com
 			, bob@example.com
 			""")
@@ -127,7 +130,7 @@ public class MailFetcherTest {
 	}
 
 	/**
-	 * Should not obtain mails if is empty.
+	 * Should not obtain unread e-mails.
 	 */
 	@Test
 	public void shouldNotFoundUnreadEMails() {
@@ -135,6 +138,91 @@ public class MailFetcherTest {
 		final var emails = this.service.fetchUnreadEMails();
 		assertNotNull(emails);
 		assertTrue(emails.isEmpty());
+
+	}
+
+	/**
+	 * Should obtain some unreal e-mails.
+	 */
+	@Test
+	public void shouldFoundUnreadEMails() {
+
+		final var rnd = new Random(0);
+		final var expected = new ArrayList<EMailPayload>();
+		for (var i = 0; i < 10; i++) {
+
+			final var payload = new EMailPayload();
+			payload.subject = "Subject of the e-mail " + rnd.nextInt(0, 1000);
+			payload.mime_type = "text/plain";
+			payload.content = "E-mail content " + rnd.nextInt(0, 100000);
+
+			payload.addresses = new ArrayList<>();
+			final var from = new EMailAddressPayload();
+			from.type = EMailAddressType.FROM;
+			from.name = "Sender user " + i;
+			from.address = "sender_" + i + "@valawai.eu";
+			payload.addresses.add(from);
+
+			for (var j = 0; j < 3; j++) {
+
+				final var to = new EMailAddressPayload();
+				to.type = EMailAddressType.TO;
+				to.name = "Test user " + j;
+				to.address = "user_" + j + "@valawai.eu";
+				payload.addresses.add(to);
+
+				final var cc = new EMailAddressPayload();
+				cc.type = EMailAddressType.CC;
+				cc.name = "Test cc user " + j;
+				cc.address = "user_cc_" + j + "@valawai.eu";
+				payload.addresses.add(cc);
+
+				final var bcc = new EMailAddressPayload();
+				bcc.type = EMailAddressType.BCC;
+				bcc.name = "Test bcc user " + j;
+				bcc.address = "user_bcc_" + j + "@valawai.eu";
+				payload.addresses.add(bcc);
+
+			}
+
+			assertTrue(this.sender.send(payload));
+			payload.received_at = Instant.now().getEpochSecond();
+			expected.add(payload);
+		}
+
+		final var emails = this.service.fetchUnreadEMails();
+		assertNotNull(emails);
+		assertTrue(expected.size() <= emails.size(), "Not received all the expected e-mails");
+		for (final var payload : expected) {
+
+			final var iter = emails.iterator();
+			while (iter.hasNext()) {
+
+				final var email = iter.next();
+				if (email.content.equals(payload.content) && email.subject.equals(payload.subject)) {
+
+					final var copy = new ArrayList<>(email.addresses);
+					copy.removeAll(payload.addresses);
+					if (copy.isEmpty()) {
+
+						assertTrue(Math.abs(payload.received_at - email.received_at) < 3,
+								"Unexpected received time stamp.");
+						iter.remove();
+
+					} else {
+
+						System.err.println(Json.encodePrettily(copy));
+
+					}
+				}
+
+			}
+		}
+		assertTrue(emails.isEmpty(), "Unexpected received e-mails");
+
+		final var nomoreUnreadEmails = this.service.fetchUnreadEMails();
+		assertNotNull(nomoreUnreadEmails);
+		assertTrue(nomoreUnreadEmails.isEmpty());
 
 	}
 

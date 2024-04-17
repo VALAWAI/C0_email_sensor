@@ -43,6 +43,21 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD:-password}
       ME_CONFIG_MONGODB_PORT: ${MONGO_PORT:-27017}
       ME_CONFIG_MONGODB_SERVER: mongo
+  mail:
+    image: dbck/mailtrap:${MAILTRAP_TAG:-latest}
+    container_name: email_dev
+    ports:
+      - "${MAIL_SMTP:-1025}:25"
+      - "${MAIL_SMTPS:-1465}:465"
+      - "${MAIL_IMAP:-1587}:587"
+      - "${MAIL_IMAP:-1143}:143"
+      - "${MAIL_IMAPS:-1993}:993"
+      - "${MAIL_WEB:-8083}:80"
+    networks:
+      - c0_email_sensor_dev
+    environment:
+      MAILTRAP_USER: ${MAIL_USER_NAME:-user}
+      MAILTRAP_PASSWORD: ${MAIL_USER_PASSWORD:-password}
   mov:
     image: valawai/mov:${MOV_TAG:-latest}
     container_name: mov_dev
@@ -51,7 +66,7 @@ services:
       - mongo
       - mq
     ports:
-      - ${MOV_UI_PORT:-8083}:8080
+      - ${MOV_UI_PORT:-8084}:8080
     networks:  
       - c0_email_sensor_dev
     environment:

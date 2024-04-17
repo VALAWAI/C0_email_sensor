@@ -12,13 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.Address;
-import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message.RecipientType;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
-import javax.mail.search.FlagTerm;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -55,7 +54,7 @@ public class MailFetcher {
 	 * This is {@code true} if the connection is secure.
 	 */
 	@ConfigProperty(name = "mail.secured", defaultValue = "true")
-	String secured;
+	boolean secured;
 
 	/**
 	 * The name for the user that can log in into the mail server.
@@ -81,58 +80,60 @@ public class MailFetcher {
 
 			final var properties = new java.util.Properties();
 			properties.put("mail.store.protocol", this.protocol);
-			if ("pop3".equals(this.protocol)) {
+			if (this.secured) {
 
-				properties.put("mail.pop3.host", this.host);
-				properties.put("mail.pop3.port", this.port);
-				properties.put("mail.pop3.starttls.enable", this.secured);
+				if (!this.protocol.endsWith("s")) {
 
-			} else {
-
-				properties.put("mail.imap.host", this.host);
-				properties.put("mail.imap.port", this.port);
-				properties.put("mail.imap.ssl.enable", this.secured);
-
+					this.protocol += "s";
+				}
 			}
+			properties.put("mail." + this.protocol + ".host", this.host);
+			properties.put("mail." + this.protocol + ".port", this.port);
+			properties.put("mail." + this.protocol + ".starttls.enable", this.secured);
+			properties.put("mail." + this.protocol + ".ssl.trust", "*");
 			final Session emailSession = Session.getDefaultInstance(properties);
-			var storeProtocol = this.protocol;
-			if (Boolean.parseBoolean(this.secured)) {
-
-				storeProtocol += "s";
-			}
-			final Store store = emailSession.getStore(storeProtocol);
+			final Store store = emailSession.getStore(this.protocol);
 
 			store.connect(this.host, this.user, this.password);
 			final Folder inbox = store.getFolder("INBOX");
 			inbox.open(Folder.READ_WRITE);
-			final Flags seen = new Flags(Flags.Flag.RECENT);
-			final FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-			final var messages = inbox.search(unseenFlagTerm);
-			for (final var message : messages) {
+			final var newCount = inbox.getNewMessageCount();
+			if (newCount > 0) {
 
-				final var email = new EMailPayload();
-				email.addresses = new ArrayList<>();
-				this.fillInWithType(email, EMailAddressType.FROM, message.getFrom());
-				this.fillInWithType(email, EMailAddressType.TO, message.getRecipients(RecipientType.TO));
-				this.fillInWithType(email, EMailAddressType.CC, message.getRecipients(RecipientType.CC));
-				this.fillInWithType(email, EMailAddressType.BCC, message.getRecipients(RecipientType.BCC));
-				email.subject = message.getSubject();
-				email.mime_type = message.getContentType();
-				email.content = String.valueOf(message.getContent());
-				final var date = message.getReceivedDate();
-				if (date != null) {
+				final var messages = inbox.getMessages();
+				for (final var message : messages) {
 
-					email.received_at = date.toInstant().getEpochSecond();
+					final var flags = message.getFlags();
+					if (!flags.contains(Flag.SEEN) && !flags.contains(Flag.DRAFT) && !flags.contains(Flag.DELETED)
+							&& flags.contains(Flag.RECENT)) {
+
+						message.setFlag(Flag.SEEN, true);
+						final var email = new EMailPayload();
+						email.addresses = new ArrayList<>();
+						this.fillInWithType(email, EMailAddressType.FROM, message.getFrom());
+						this.fillInWithType(email, EMailAddressType.TO, message.getRecipients(RecipientType.TO));
+						this.fillInWithType(email, EMailAddressType.CC, message.getRecipients(RecipientType.CC));
+						this.fillInWithType(email, EMailAddressType.BCC, message.getRecipients(RecipientType.BCC));
+						email.subject = message.getSubject();
+						email.mime_type = message.getContentType();
+						email.content = String.valueOf(message.getContent()).trim();
+						final var date = message.getReceivedDate();
+						if (date != null) {
+
+							email.received_at = date.toInstant().getEpochSecond();
+						}
+						emails.add(email);
+
+					}
+
 				}
-				emails.add(email);
-
 			}
 			inbox.close(false);
 			store.close();
 
 		} catch (final Throwable error) {
 
-			Log.errorv(error, "Cannot fetch the emails.");
+			Log.errorv(error, "Cannot fetch the e-mails.");
 
 		}
 		return emails;
@@ -175,35 +176,17 @@ public class MailFetcher {
 
 			return null;
 
-		} else {
+		} else if (address instanceof final InternetAddress internet) {
 
 			final var payload = new EMailAddressPayload();
-			if (address instanceof InternetAddress internet) {
-
-				payload.name = internet.getPersonal();
-				payload.address = internet.getAddress();
-
-			} else {
-
-				final var value = address.toString().trim();
-				final var begin = value.indexOf('<');
-				if (begin > -1) {
-
-					final var last = value.indexOf('>', begin);
-					payload.name = value.substring(0, begin).trim();
-					if (value.length() > last) {
-
-						payload.name += " " + value.substring(last + 1).trim();
-						payload.name = payload.name.trim();
-					}
-					payload.address = value.substring(begin + 1, last).trim();
-
-				} else {
-
-					payload.address = value;
-				}
-			}
+			payload.name = internet.getPersonal();
+			payload.address = internet.getAddress();
 			return payload;
+
+		} else {
+
+			final var value = address.toString().trim();
+			return EMailAddressPayload.decode(value);
 		}
 	}
 

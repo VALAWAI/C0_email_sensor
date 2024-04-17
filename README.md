@@ -52,5 +52,7 @@ Also, this starts the tools:
  **mov**:**password**.
  * __Mongo express__  the web interface to interact with the MongoDB. The web interface
   can be opened at **http://localhost:8082**.
- * __Master of VALAWAI__  the component that mantains the topology connections between components.
+ * __Mail trapper__  the component that simulates a mail server.
   The web interface can be opened at **http://localhost:8083**.
+ * __Master of VALAWAI__  the component that mantains the topology connections between components.
+  The web interface can be opened at **http://localhost:8084**.
