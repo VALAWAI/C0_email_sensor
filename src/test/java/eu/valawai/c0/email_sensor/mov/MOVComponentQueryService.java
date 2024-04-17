@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-package eu.valawai.c0.email_sensor;
+package eu.valawai.c0.email_sensor.mov;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;

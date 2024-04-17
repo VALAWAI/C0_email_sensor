@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import eu.valawai.c0.email_sensor.mov.PayloadTestCase;
+
 /**
  * Test the {@link EMailAddressPayload}.
  *

@@ -10,6 +10,8 @@ package eu.valawai.c0.email_sensor;
 
 import java.util.List;
 
+import eu.valawai.c0.email_sensor.mov.Payload;
+
 /**
  * The payload that contains the information of an e-mail.
  *

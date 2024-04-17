@@ -10,6 +10,8 @@ package eu.valawai.c0.email_sensor;
 
 import java.util.ArrayList;
 
+import eu.valawai.c0.email_sensor.mov.PayloadTestCase;
+
 /**
  * Test the {@link EMailPayload}.
  *

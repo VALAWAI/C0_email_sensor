@@ -6,7 +6,9 @@
   https://opensource.org/license/gpl-3-0/
 */
 
-package eu.valawai.c0.email_sensor;
+package eu.valawai.c0.email_sensor.mov;
+
+import eu.valawai.c0.email_sensor.mov.UnregisterComponentPayload;
 
 /**
  * Test the {@link UnregisterComponentPayload}.

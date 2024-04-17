@@ -8,6 +8,8 @@
 
 package eu.valawai.c0.email_sensor;
 
+import eu.valawai.c0.email_sensor.mov.Payload;
+
 /**
  * Describe the address associated to an e-mail.
  *

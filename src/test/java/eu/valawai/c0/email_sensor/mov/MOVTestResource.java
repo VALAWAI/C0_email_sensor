@@ -5,7 +5,7 @@
   license that can be found in the LICENSE file or at
   https://opensource.org/license/gpl-3-0/
 */
-package eu.valawai.c0.email_sensor;
+package eu.valawai.c0.email_sensor.mov;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,6 +79,10 @@ public class MOVTestResource implements QuarkusTestResourceLifecycleManager {
 
 			config.put("quarkus.mongodb.connection-string", "mongodb://mov:password@host.docker.internal:27017/movDB");
 			config.put("rabbitmq-host", "host.docker.internal");
+			config.put("quarkus.http.host", "host.docker.internal");
+			config.put("quarkus.http.port", "8083");
+			config.put("quarkus.http.test-host", "host.docker.internal");
+			config.put("quarkus.http.test-port", "8083");
 
 		} else {
 
@@ -98,6 +102,11 @@ public class MOVTestResource implements QuarkusTestResourceLifecycleManager {
 					.withEnv("quarkus.mongodb.connection-string", mongoConnection).withExposedPorts(8080)
 					.waitingFor(Wait.forListeningPort());
 			movContainer.start();
+			config.put("quarkus.http.test-host", movContainer.getHost());
+			config.put("quarkus.http.test-port", String.valueOf(movContainer.getMappedPort(8080)));
+			config.put("quarkus.http.host", movContainer.getHost());
+			config.put("quarkus.http.port", String.valueOf(movContainer.getMappedPort(8080)));
+
 		}
 
 		return config;

@@ -31,27 +31,27 @@ import io.vertx.core.json.Json;
 import jakarta.inject.Inject;
 
 /**
- * Test the {@link MailFetcher}.
+ * Test the {@link EMailFetcher}.
  *
- * @see MailFetcher
+ * @see EMailFetcher
  *
  * @author UDT-IA, IIIA-CSIC
  */
 @QuarkusTest
-@QuarkusTestResource(MailTestResource.class)
-public class MailFetcherTest {
+@QuarkusTestResource(EMailServerTestResource.class)
+public class EMailFetcherTest {
 
 	/**
 	 * The service to test.
 	 */
 	@Inject
-	MailFetcher service;
+	EMailFetcher service;
 
 	/**
 	 * The service to send e-mails.
 	 */
 	@Inject
-	MailSender sender;
+	EMailSender sender;
 
 	/**
 	 * Should not obtain the payload address from {@code null}.
@@ -59,7 +59,7 @@ public class MailFetcherTest {
 	@Test
 	public void shouldEncodeNullAddressToNullPayload() {
 
-		assertNull(new MailFetcher().toEMailAddressPayload(null));
+		assertNull(new EMailFetcher().toEMailAddressPayload(null));
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class MailFetcherTest {
 			}
 
 		};
-		final var payload = new MailFetcher().toEMailAddressPayload(address);
+		final var payload = new EMailFetcher().toEMailAddressPayload(address);
 		assertNotNull(payload);
 		assertEquals(name, payload.name);
 		assertEquals(email, payload.address);
@@ -123,7 +123,7 @@ public class MailFetcherTest {
 	public void shouldEncodeAddressToPayload(String name, String email) throws UnsupportedEncodingException {
 
 		final var address = new InternetAddress(email, name);
-		final var payload = new MailFetcher().toEMailAddressPayload(address);
+		final var payload = new EMailFetcher().toEMailAddressPayload(address);
 		assertNotNull(payload);
 		assertEquals(name, payload.name);
 		assertEquals(email, payload.address);

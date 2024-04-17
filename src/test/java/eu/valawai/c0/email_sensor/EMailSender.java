@@ -25,7 +25,7 @@ import jakarta.enterprise.context.ApplicationScoped;
  * @author UDT-IA, IIIA-CSIC
  */
 @ApplicationScoped
-public class MailSender {
+public class EMailSender {
 
 	/**
 	 * The port for the smtp.
@@ -71,7 +71,7 @@ public class MailSender {
 			final var session = Session.getInstance(props, new javax.mail.Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(MailSender.this.username, MailSender.this.password);
+					return new PasswordAuthentication(EMailSender.this.username, EMailSender.this.password);
 				}
 			});
 			final var msg = new MimeMessage(session);

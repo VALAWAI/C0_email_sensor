@@ -6,11 +6,13 @@
   https://opensource.org/license/gpl-3-0/
 */
 
-package eu.valawai.c0.email_sensor;
+package eu.valawai.c0.email_sensor.mov;
 
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
+
+import eu.valawai.c0.email_sensor.mov.Payload;
 
 /**
  * The information necessary to query for some components.

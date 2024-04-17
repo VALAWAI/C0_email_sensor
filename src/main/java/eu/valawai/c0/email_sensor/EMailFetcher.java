@@ -30,7 +30,7 @@ import jakarta.enterprise.context.ApplicationScoped;
  * @author UDT-IA, IIIA-CSIC
  */
 @ApplicationScoped
-public class MailFetcher {
+public class EMailFetcher {
 
 	/**
 	 * The protocol to connect to the mail server. It can be pop3 or imap
