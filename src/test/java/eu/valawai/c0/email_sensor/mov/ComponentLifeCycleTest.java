@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 
-import eu.valawai.c0.email_sensor.mov.ComponentLifeCycle;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

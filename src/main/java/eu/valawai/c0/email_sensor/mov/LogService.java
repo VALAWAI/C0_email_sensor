@@ -124,6 +124,29 @@ public class LogService {
 	}
 
 	/**
+	 * Send a warning log message.
+	 *
+	 * @param message of the log message.
+	 * @param params  parameters to replace on the message.
+	 */
+	public void warning(String message, Object... params) {
+
+		this.send(LogLevel.WARN, null, message, params);
+	}
+
+	/**
+	 * Send a warning log message.
+	 *
+	 * @param payload for the message.
+	 * @param message of the log message.
+	 * @param params  parameters to replace on the message.
+	 */
+	public void warningWithPayload(Object payload, String message, Object... params) {
+
+		this.send(LogLevel.WARN, payload, message, params);
+	}
+
+	/**
 	 * Send a log message.
 	 *
 	 * @param level   of the log.

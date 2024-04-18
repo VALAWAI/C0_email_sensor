@@ -8,8 +8,6 @@
 
 package eu.valawai.c0.email_sensor.mov;
 
-import eu.valawai.c0.email_sensor.mov.Payload;
-
 /**
  * Generic test over the classes that extends the {@link Payload}.
  *

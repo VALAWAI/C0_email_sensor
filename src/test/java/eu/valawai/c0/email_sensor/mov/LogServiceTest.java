@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import eu.valawai.c0.email_sensor.EMailPayloadTest;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.core.json.Json;
@@ -24,6 +25,8 @@ import jakarta.inject.Inject;
 
 /**
  * Test the log service.
+ *
+ * @see LogService
  *
  * @author UDT-IA, IIIA-CSIC
  */
@@ -44,9 +47,104 @@ public class LogServiceTest {
 	public void shouldSendDebugMessage() {
 
 		final var value = UUID.randomUUID().toString();
+		final var message = "Test " + value + " 1";
+		this.service.debug("Test {0} {1}", value, 1);
+		this.checkLogStored(LogLevel.DEBUG, message, null, Duration.ofSeconds(30));
+
+	}
+
+	/**
+	 * Test warn message.
+	 */
+	@Test
+	public void shouldSendWarnMessage() {
+
+		final var value = UUID.randomUUID().toString();
+		final var message = "Test " + value + " 1";
+		this.service.warning("Test {0} {1}", value, 1);
+		this.checkLogStored(LogLevel.WARN, message, null, Duration.ofSeconds(30));
+
+	}
+
+	/**
+	 * Test error message.
+	 */
+	@Test
+	public void shouldSendErrorMessage() {
+
+		final var value = UUID.randomUUID().toString();
 		final var message = "Test " + value + " 2";
-		this.service.debug("Test {0} {1}", value, 2);
-		this.checkLogStored(LogLevel.DEBUG, null, message, Duration.ofSeconds(30));
+		this.service.error("Test {0} {1}", value, 2);
+		this.checkLogStored(LogLevel.ERROR, message, null, Duration.ofSeconds(30));
+
+	}
+
+	/**
+	 * Test info message.
+	 */
+	@Test
+	public void shouldSendInfoMessage() {
+
+		final var value = UUID.randomUUID().toString();
+		final var message = "Test " + value + " 3";
+		this.service.info("Test {0} {1}", value, 3);
+		this.checkLogStored(LogLevel.INFO, message, null, Duration.ofSeconds(30));
+
+	}
+
+	/**
+	 * Test debug message with payload.
+	 */
+	@Test
+	public void shouldSendDebugWithPayloadMessage() {
+
+		final var value = UUID.randomUUID().toString();
+		final var message = "Test " + value + " 1";
+		final var payload = new EMailPayloadTest().nextModel();
+		this.service.debugWithPayload(payload, "Test {0} {1}", value, 1);
+		this.checkLogStored(LogLevel.DEBUG, message, payload, Duration.ofSeconds(30));
+
+	}
+
+	/**
+	 * Test info message with payload.
+	 */
+	@Test
+	public void shouldSendInfoWithPayloadMessage() {
+
+		final var value = UUID.randomUUID().toString();
+		final var message = "Test " + value + " 1";
+		final var payload = new EMailPayloadTest().nextModel();
+		this.service.infoWithPayload(payload, "Test {0} {1}", value, 1);
+		this.checkLogStored(LogLevel.INFO, message, payload, Duration.ofSeconds(30));
+
+	}
+
+	/**
+	 * Test warning message with payload.
+	 */
+	@Test
+	public void shouldSendWarningWithPayloadMessage() {
+
+		final var value = UUID.randomUUID().toString();
+		final var message = "Test " + value + " 1";
+		final var payload = new EMailPayloadTest().nextModel();
+		this.service.warningWithPayload(payload, "Test {0} {1}", value, 1);
+		this.checkLogStored(LogLevel.WARN, message, payload, Duration.ofSeconds(30));
+
+	}
+
+	/**
+	 * Test error message with payload.
+	 */
+	@Test
+	public void shouldSendErrorWithPayloadMessage() {
+
+		final var value = UUID.randomUUID().toString();
+		final var message = "Test " + value + " 1";
+		final var payload = new EMailPayloadTest().nextModel();
+		this.service.errorWithPayload(payload, "Test {0} {1}", value, 1);
+		this.checkLogStored(LogLevel.ERROR, message, payload, Duration.ofSeconds(30));
 
 	}
 
@@ -88,9 +186,8 @@ public class LogServiceTest {
 									final var found = log.getString("payload");
 									if (found != null) {
 
-										final var expected = Json.decodeValue(Json.encode(payload), JsonObject.class);
-										final var decoded = Json.decodeValue(found, JsonObject.class);
-										if (expected.equals(decoded)) {
+										final var decoded = Json.decodeValue(found, payload.getClass());
+										if (payload.equals(decoded)) {
 
 											return;
 										}

@@ -12,8 +12,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-import eu.valawai.c0.email_sensor.mov.Payload;
-
 /**
  * The information necessary to query for some components.
  *
