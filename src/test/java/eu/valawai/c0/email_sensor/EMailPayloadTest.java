@@ -36,7 +36,7 @@ public class EMailPayloadTest extends PayloadTestCase<EMailPayload> {
 	@Override
 	public void fillIn(EMailPayload payload) {
 
-		final var max = rnd.nextInt(1, 5);
+		final var max = rnd.nextInt(2, 7);
 		payload.addresses = new ArrayList<>();
 
 		final var builder = new EMailAddressPayloadTest();
@@ -46,6 +46,10 @@ public class EMailPayloadTest extends PayloadTestCase<EMailPayload> {
 			if (i == 0) {
 
 				address.type = EMailAddressType.FROM;
+
+			} else if (i == 1) {
+
+				address.type = EMailAddressType.TO;
 
 			} else {
 
@@ -59,7 +63,7 @@ public class EMailPayloadTest extends PayloadTestCase<EMailPayload> {
 		}
 		payload.subject = "Subject " + rnd.nextInt(0, 10000);
 		payload.mime_type = "text/plain";
-		payload.content = "E-Mail content " + rnd.nextInt() + " lore ipsum lore";
+		payload.content = "E-Mail content " + rnd.nextInt(0, 123456789) + " lore ipsum lore";
 		payload.received_at = rnd.nextLong(0, 200000000);
 	}
 

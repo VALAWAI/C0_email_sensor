@@ -44,8 +44,9 @@ public class EMailAddressPayloadTest extends PayloadTestCase<EMailAddressPayload
 
 		final var values = EMailAddressType.values();
 		payload.type = values[rnd.nextInt(0, values.length)];
-		payload.name = "User name " + rnd.nextInt();
-		payload.address = "user_" + rnd.nextInt() + "@valawai.eu";
+		final var userId = rnd.nextInt(0, 1000000);
+		payload.name = "User name " + userId;
+		payload.address = "user_" + userId + "@valawai.eu";
 	}
 
 	/**

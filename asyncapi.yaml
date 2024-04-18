@@ -95,9 +95,10 @@ components:
       description: The parameters that configure the component.
       type: object
       properties:
-        body:
-          type: string
-          description: The body of the e-mail
+        fetching_interval:
+          type: integer
+          min: 1
+          description: The seconds between fetching e-mails intervals.
           
     component_payload:
       type: object

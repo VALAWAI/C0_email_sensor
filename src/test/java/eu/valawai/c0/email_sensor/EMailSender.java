@@ -93,7 +93,7 @@ public class EMailSender {
 				}
 			}
 			msg.setSubject(payload.subject);
-			msg.setText(payload.content);
+			msg.setText(payload.content, "UTF-8");
 			Transport.send(msg);
 			return true;
 

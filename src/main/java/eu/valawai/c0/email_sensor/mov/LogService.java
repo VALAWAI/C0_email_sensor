@@ -164,7 +164,7 @@ public class LogService {
 			log.payload = Json.encodePrettily(payload);
 		}
 		this.send(log);
-		;
+
 	}
 
 }
