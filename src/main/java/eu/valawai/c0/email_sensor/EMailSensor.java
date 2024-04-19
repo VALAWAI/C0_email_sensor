@@ -148,22 +148,30 @@ public class EMailSensor {
 		this.vertx.executeBlocking(() -> {
 
 			final var messages = this.fetcher.fetchUnreadEMails();
-			for (final var message : messages) {
+			if (messages == null) {
 
-				this.notifier.send(message).handle((success, error) -> {
+				this.log.error("Cannot fetch the unread e-mails");
 
-					if (error == null) {
+			} else {
 
-						this.log.infoWithPayload(message, "Sensed the a new e-mail.");
-						Log.debugv("Sent email {0}.", message);
+				this.log.debug("Fetcher {0} unread e-mails", messages.size());
+				for (final var message : messages) {
 
-					} else {
+					this.notifier.send(message).handle((success, error) -> {
 
-						Log.errorv(error, "Cannot send the e-mail {0}.", message);
-					}
-					return null;
-				});
+						if (error == null) {
 
+							this.log.infoWithPayload(message, "Sensed the a new e-mail.");
+							Log.debugv("Sent email {0}.", message);
+
+						} else {
+
+							Log.errorv(error, "Cannot send the e-mail {0}.", message);
+						}
+						return null;
+					});
+
+				}
 			}
 			return null;
 

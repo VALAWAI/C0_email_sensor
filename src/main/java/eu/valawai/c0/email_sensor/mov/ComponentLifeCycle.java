@@ -51,9 +51,10 @@ public class ComponentLifeCycle {
 	protected String version;
 
 	/**
-	 * The identifier of the registered component.
+	 * The status of the component.
 	 */
-	protected String componentId;
+	@Inject
+	protected ComponentStatus status;
 
 	/**
 	 * Called when the component is started and it must to register it on the
@@ -88,10 +89,10 @@ public class ComponentLifeCycle {
 	 */
 	public void handle(@Observes ShutdownEvent event) {
 
-		if (this.componentId != null) {
+		if (this.status.isRegistered()) {
 
 			final var payload = new UnregisterComponentPayload();
-			payload.component_id = this.componentId;
+			payload.component_id = this.status.getRegisteredId();
 			this.unregister.send(payload).handle((success, error) -> {
 
 				if (error == null) {
@@ -117,7 +118,8 @@ public class ComponentLifeCycle {
 	@Incoming("registered")
 	public void handleControlRegistered(JsonObject payload) {
 
-		this.componentId = payload.getString("id");
+		final var componentId = payload.getString("id");
+		this.status.registered(componentId);
 		Log.infov("Registered component {0}.", payload);
 
 	}

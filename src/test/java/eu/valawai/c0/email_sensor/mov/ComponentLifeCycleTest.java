@@ -42,13 +42,18 @@ public class ComponentLifeCycleTest {
 	protected MOVComponentQueryService queryService;
 
 	/**
+	 * The status of the component.
+	 */
+	@Inject
+	protected ComponentStatus status;
+
+	/**
 	 * Check that the component is registered.
 	 */
 	@Test
 	public void shouldComponentBeRegistered() {
 
-		var component = this.queryService.queryComponentInformation();
-		for (var i = 0; i < 10 && component == null; i++) {
+		for (var i = 0; i < 60 && !this.status.isRegistered(); i++) {
 
 			try {
 
@@ -56,9 +61,13 @@ public class ComponentLifeCycleTest {
 
 			} catch (final InterruptedException ignored) {
 			}
-			component = this.queryService.queryComponentInformation();
+
 		}
+		final var componentId = this.status.getRegisteredId();
+		assertNotNull(componentId);
+		final var component = this.queryService.queryComponentInformation();
 		assertNotNull(component);
+		assertEquals(componentId, component.getString("id"));
 		assertEquals(this.version, component.getString("version"));
 
 	}

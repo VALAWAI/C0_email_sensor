@@ -68,7 +68,7 @@ public class RegisterComponentPayload extends Payload {
 
 			} catch (final Throwable error) {
 
-				Log.errorv(error, "Cannot obtain the asycnapi.yaml");
+				Log.errorv(error, "Cannot obtain the asyncapi.yaml");
 				return null;
 			}
 		}

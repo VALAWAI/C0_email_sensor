@@ -34,12 +34,19 @@ public class LogService {
 	Emitter<AddLogPayload> service;
 
 	/**
+	 * The status of the component.
+	 */
+	@Inject
+	protected ComponentStatus status;
+
+	/**
 	 * Send a log into the Master Of VALAWAI.
 	 *
 	 * @param payload with the log to report.
 	 */
 	public void send(AddLogPayload payload) {
 
+		payload.component_id = this.status.getRegisteredId();
 		this.service.send(payload).handle((success, error) -> {
 
 			if (error == null) {

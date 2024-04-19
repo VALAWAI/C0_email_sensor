@@ -24,6 +24,11 @@ public class AddLogPayload extends Payload {
 	public LogLevel level;
 
 	/**
+	 * The identifier of the component that has generated the log message.
+	 */
+	public String component_id;
+
+	/**
 	 * The message of the log.
 	 */
 	public String message;

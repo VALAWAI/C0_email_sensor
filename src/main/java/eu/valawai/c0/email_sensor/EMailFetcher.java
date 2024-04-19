@@ -71,11 +71,11 @@ public class EMailFetcher {
 	/**
 	 * Fetch for the e-mail that has not been read.
 	 *
-	 * @return the email that has not been read.
+	 * @return the fetched unread e-mail or {@code null} if cannot fetch the
+	 *         e-mials.
 	 */
 	public List<EMailPayload> fetchUnreadEMails() {
 
-		final var emails = new ArrayList<EMailPayload>();
 		try {
 
 			final var properties = new java.util.Properties();
@@ -98,6 +98,7 @@ public class EMailFetcher {
 			final Folder inbox = store.getFolder("INBOX");
 			inbox.open(Folder.READ_WRITE);
 			final var newCount = inbox.getNewMessageCount();
+			final var emails = new ArrayList<EMailPayload>();
 			if (newCount > 0) {
 
 				final var messages = inbox.getMessages();
@@ -130,13 +131,13 @@ public class EMailFetcher {
 			}
 			inbox.close(false);
 			store.close();
+			return emails;
 
 		} catch (final Throwable error) {
 
 			Log.errorv(error, "Cannot fetch the e-mails.");
-
+			return null;
 		}
-		return emails;
 
 	}
 
