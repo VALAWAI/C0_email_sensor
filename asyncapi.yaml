@@ -3,8 +3,8 @@ info:
  title: C0 E-mail sensor API
  version: '1.0.0'
  description: |
-  This VALAWAI component extracts information from received e-mails and propagates
-  them to other components.
+  This VALAWAI component extracts information from received non-read e-mails
+  and propagates them to other components.
  license:
   name: GNU General Public License version 3
   url: https://opensource.org/license/gpl-3-0/
@@ -14,19 +14,19 @@ info:
 
 channels:
   valawai/c0/email_sensor/data/e_mail:
-    description: Notify about the received e-mails.
+    description: Notify about the received non-read e-mails.
     publish:
       message:
         $ref: '#/components/messages/received_e_mail'
 
   valawai/c0/email_sensor/control/change_parameters:
-    description: The action to change the parameters taht configure the component.
+    description: The action to change the parameters that configure this component.
     subscribe:
       message:
         $ref: '#/components/messages/component_parameters'
 
   valawai/c0/email_sensor/control/registered:
-    description: The message to notify when the component has been registered.
+    description: Notify this component when it has been registered.
     subscribe:
       message:
         $ref: '#/components/messages/registered_component'
@@ -57,23 +57,33 @@ components:
         address:
           type: array
           description: The e-mail subject.
-          itemas:
+          items:
             - $ref: '#/components/schemas/e_mail_address_payload'
+          examples:
+           - [{"type":"FROM","name":"Jane doe","address":"jane.doe@valawai.eu"},{"type":"TO","address":"info@valawai.eu"}]
         subject:
           type: string
           description: The e-mail subject.
+          examples:
+           - How to publish a component?
         mime_type:
           type: string
-          description: The MIME type associated to the e-mail content.
+          description: The MIME type associated with the e-mail content.
+          examples:
+           - text/plain
         content:
           type: string
           description: The content of the e-mail.
+          examples:
+           - Hi! Could you please inform me about the necessary steps to have a component available in the VALAWAI? 
         received_at:
           type: integer
           description: The epoch time, in seconds, when the email is received.
+          examples:
+           - 1715342664
           
     e_mail_address_payload:
-      description: Describe the address associated to an e-mail.
+      description: Describe the address associated with an e-mail.
       type: object
       properties:
         type:
@@ -84,12 +94,18 @@ components:
             - TO
             - CC
             - BCC
+          examples:
+           - FROM
         name:
           type: string
           description: The name of the user.
+          examples:
+           - VALAWAI
         address:
           type: string
           description: The e-mail address.
+          examples:
+           - no-reply@valawai.eu
           
     component_parameters_payload:
       description: The parameters that configure the component.
@@ -99,7 +115,9 @@ components:
           type: integer
           min: 1
           description: The seconds between fetching e-mails intervals.
-          
+          example:
+           - 300
+           
     component_payload:
       type: object
       properties:
@@ -142,7 +160,7 @@ components:
           examples: 
             - '1709902001'
         channels:
-          description: The channels that the component have.
+          description: The channels that the component has.
           type: array
           items:
             - $ref: '#/components/schemas/channel_schema'
@@ -156,13 +174,13 @@ components:
 
     channel_schema:
       type: object
-      description: A schema that define the messages that a channel can receive or send.
+      description: A schema that defines the messages that a channel can receive or send.
       properties:
         id:
           description: The identifier of the channel.
           type: string
           examples: 
-            - 'valawai/c0_voice_to_text/audio'
+            - 'valawai/c0/voice_to_text/data/audio'
         description:
           description: The description of the channel.
           type: string
@@ -214,7 +232,7 @@ components:
                 - 'STRING'
 
     enum_payload_schema:
-      description: A payload that is defined of one value of a set.
+      description: A payload that is defined as one value of a set.
       allOf:
         - $ref: '#/components/schemas/payload_schema'
         - type: object
@@ -228,7 +246,7 @@ components:
                 - type: string
 
     object_payload_schema:
-      description: A definition of a schema that describe an object.
+      description: A definition of a schema that describes an object.
       allOf:
         - $ref: '#/components/schemas/payload_schema'
         - type: object
@@ -237,7 +255,7 @@ components:
               const: 'OBJECT'
             id:
               type: integer
-              description: The identifier used whne this schme is refer by other components.
+              description: The identifier used when this scheme is referred to by other components.
             properties:
               description: The properties that define the object.
               additionalProperties:
@@ -258,7 +276,7 @@ components:
                 - $ref: '#/components/schemas/payload_schema'
 
     constant_payload_schema:
-      description: A payload that is a consatnt value.
+      description: A payload that is a constant value.
       allOf:
         - $ref: '#/components/schemas/payload_schema'
         - type: object
