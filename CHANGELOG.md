@@ -1,5 +1,5 @@
 # C0_email_sensor
 
-## Version 1.0.0 (March 10, 2024)
+## Version 1.0.0 (March 16, 2024)
 
  - First public release.
