@@ -79,7 +79,7 @@ a [mocked e-mail server](https://github.com/dbck/docker-mailtrap). You can use t
 command to start this component with the MOV and the mail server.
 
 ```
-COMPOSE_PROFILES=mov,mail docker-compose up -d
+COMPOSE_PROFILES=mov,mail docker compose up -d
 ```
 
 After that, if you open a browser and go to [http://localhost:8080](http://localhost:8080)
@@ -88,7 +88,7 @@ at [http://localhost:8081](http://localhost:8081). Finally, you can access the m
 user interface at [http://localhost:8082](http://localhost:8082). 
 one are **mov:password**.
 
-The docker-compose defines some variables that can be modified by creating a file named
+The docker compose defines some variables that can be modified by creating a file named
 [**.env**](https://docs.docker.com/compose/environment-variables/env-file/) where 
 you write the name of the variable plus equals plus the value.  As you can see in
 the next example.
@@ -152,12 +152,12 @@ The defined variables are:
 The database is only created the first time where script is called. So, if you modify
 any of the database parameters you must create again the database. For this, you must
 remove the directory defined by the parameter **MONGO_LOCAL_DATA** and start again
-the **docker-compose**.
+the **docker compose**.
 
 You can stop all the started containers with the command:
 
 ```
-COMPOSE_PROFILES=mov,mail docker-compose down
+COMPOSE_PROFILES=mov,mail docker compose down
 ``` 
  
  

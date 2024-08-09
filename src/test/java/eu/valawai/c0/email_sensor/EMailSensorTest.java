@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import eu.valawai.c0.email_sensor.mov.MOVTestResource;
 import io.quarkus.logging.Log;
-import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 
@@ -38,8 +38,8 @@ import jakarta.inject.Inject;
  * @author UDT-IA, IIIA-CSIC
  */
 @QuarkusTest
-@QuarkusTestResource(MOVTestResource.class)
-@QuarkusTestResource(EMailServerTestResource.class)
+@WithTestResource(value = MOVTestResource.class)
+@WithTestResource(value = EMailServerTestResource.class)
 public class EMailSensorTest {
 
 	/**

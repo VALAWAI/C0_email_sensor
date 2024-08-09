@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.core.json.Json;
 import jakarta.inject.Inject;
@@ -38,7 +38,7 @@ import jakarta.inject.Inject;
  * @author UDT-IA, IIIA-CSIC
  */
 @QuarkusTest
-@QuarkusTestResource(EMailServerTestResource.class)
+@WithTestResource(value = EMailServerTestResource.class)
 public class EMailFetcherTest {
 
 	/**

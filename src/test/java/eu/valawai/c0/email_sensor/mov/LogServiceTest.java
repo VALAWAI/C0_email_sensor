@@ -17,7 +17,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import eu.valawai.c0.email_sensor.EMailPayloadTest;
-import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -31,7 +31,7 @@ import jakarta.inject.Inject;
  * @author UDT-IA, IIIA-CSIC
  */
 @QuarkusTest
-@QuarkusTestResource(MOVTestResource.class)
+@WithTestResource(value = MOVTestResource.class)
 public class LogServiceTest {
 
 	/**
