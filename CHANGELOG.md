@@ -1,7 +1,7 @@
 # C0_email_sensor
 
 
-## Version 1.1.0 (August 13, 2024)
+## Version 1.1.0 (August 14, 2024)
 
  - Upgrade dependencies in quarkus and MOV
  - Upgrade to JDK 21

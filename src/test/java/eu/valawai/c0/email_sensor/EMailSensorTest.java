@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +29,7 @@ import eu.valawai.c0.email_sensor.mov.MOVTestResource;
 import io.quarkus.logging.Log;
 import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 
 /**
@@ -67,6 +69,14 @@ public class EMailSensorTest {
 	@Channel("send_change_parameters")
 	@Inject
 	Emitter<EMailSensorComponentParametersPayload> changeParametersSender;
+
+	/**
+	 * The component used to send the information of the parameters that has to be
+	 * changed.
+	 */
+	@Channel("send_change_parameters")
+	@Inject
+	Emitter<JsonObject> messageSender;
 
 	/**
 	 * Should sense some e-mails.
@@ -191,7 +201,7 @@ public class EMailSensorTest {
 	 * Check not change parameters with bad parameters
 	 */
 	@Test
-	public void shouldNotChangeFetchingIntervalWithInvalidMessage() {
+	public void shouldNotChangeFetchingIntervalWithInvalidParameter() {
 
 		final var expected = System.getProperty("C0_EMAIL_SENSOR_FETCHING_INTERVAL");
 		final var parameters = new EMailSensorComponentParametersPayload();
@@ -209,7 +219,42 @@ public class EMailSensorTest {
 		});
 
 		try {
-			semaphore.tryAcquire(30, TimeUnit.SECONDS);
+			assertTrue(semaphore.tryAcquire(30, TimeUnit.SECONDS));
+		} catch (final InterruptedException ignored) {
+		}
+
+		assertTrue(errors.isEmpty());
+
+		try {
+			Thread.sleep(Duration.ofSeconds(10).toMillis());
+		} catch (final InterruptedException ignored) {
+		}
+
+		assertEquals(expected, System.getProperty("C0_EMAIL_SENSOR_FETCHING_INTERVAL"));
+	}
+
+	/**
+	 * Check not change parameters with bad message
+	 */
+	@Test
+	public void shouldNotChangeFetchingIntervalWithInvalidMessage() {
+
+		final var expected = System.getProperty("C0_EMAIL_SENSOR_FETCHING_INTERVAL");
+		final var semaphore = new Semaphore(0);
+		final var errors = new ArrayList<Throwable>();
+		this.messageSender.send(new JsonObject().put("fetching_interval", Collections.emptyList()))
+				.handle((success, error) -> {
+
+					if (error != null) {
+
+						errors.add(error);
+					}
+					semaphore.release();
+					return null;
+				});
+
+		try {
+			assertTrue(semaphore.tryAcquire(30, TimeUnit.SECONDS));
 		} catch (final InterruptedException ignored) {
 		}
 

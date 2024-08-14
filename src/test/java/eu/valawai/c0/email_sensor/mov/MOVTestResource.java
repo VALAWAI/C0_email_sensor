@@ -80,9 +80,9 @@ public class MOVTestResource implements QuarkusTestResourceLifecycleManager {
 			config.put("quarkus.mongodb.connection-string", "mongodb://mov:password@host.docker.internal:27017/movDB");
 			config.put("rabbitmq-host", "host.docker.internal");
 			config.put("quarkus.http.host", "host.docker.internal");
-			config.put("quarkus.http.port", "8083");
+			config.put("quarkus.http.port", "8084");
 			config.put("quarkus.http.test-host", "host.docker.internal");
-			config.put("quarkus.http.test-port", "8083");
+			config.put("quarkus.http.test-port", "8084");
 
 		} else {
 
