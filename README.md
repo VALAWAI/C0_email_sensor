@@ -84,9 +84,9 @@ COMPOSE_PROFILES=mov,mail docker compose up -d
 
 After that, if you open a browser and go to [http://localhost:8080](http://localhost:8080)
 you can view the MOV user interface. Also, you can access the RabbitMQ user interface
-at [http://localhost:8081](http://localhost:8081). Finally, you can access the mail server
-user interface at [http://localhost:8082](http://localhost:8082). 
-one are **mov:password**.
+at [http://localhost:8081](http://localhost:8081) with the credentials **mov:password**.
+Finally, you can access the mail server user interface at [http://localhost:8082](http://localhost:8082)
+with the credentials **user:password**.
 
 The docker compose defines some variables that can be modified by creating a file named
 [**.env**](https://docs.docker.com/compose/environment-variables/env-file/) where 
