@@ -1,6 +1,11 @@
 # C0_email_sensor
 
 
+## Version 1.2.0 (October 14, 2024)
+
+ - Add live check support
+
+
 ## Version 1.1.0 (August 14, 2024)
 
  - Upgrade dependencies in quarkus and MOV
