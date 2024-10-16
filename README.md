@@ -109,7 +109,7 @@ from doing a **GET** over the **/q/health** endpoint.
             }
         },
         {
-            "name": "Registered C0 email actuator",
+            "name": "Registered C0 email sensor",
             "status": "UP"
         },
         {
@@ -152,7 +152,6 @@ Finally, remember that the  docker environment variables **QUARKUS_HTTP_HOST** a
 can be used to configure where the REST health endpoints will be exposed by the component.
 
 
- 
 ## Deploy
 
 On the file [docker-compose.yml](docker-compose.yml), you can see how the docker image
