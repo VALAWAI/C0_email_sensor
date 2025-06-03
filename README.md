@@ -1,291 +1,138 @@
 # C0_email_sensor
 
-The C0 e-mail sensor component extracts information from e-mails and propagates it
-to all the infrastructure. Thus, this component fetches the e-mails of a user
-account in an email server, normalizes them and publishes them in the channel
-**valawai/c0/email_sensor/data/e_mail**. Also, it provides the possibility to change
-the component parameters if you send a message to the queue 
-**valawai/c0/email_sensor/control/change_parameters**. You can read more about
-this service and the payload of the message on the [aysncapi](asyncapi.yaml)
-or on the [component documentation](https://valawai.github.io/docs/components/C0/email_sensor).
+The E-mail sensor (C0) is designed component extracts information from e-mails and propagates it
+to all the infrastructure. 
 
 
 ## Summary
 
- - Type: C0
- - Name: E-mail sensor
- - Version: 1.2.0 (October 16,2024)
- - API: [1.0.0 (March 16, 2024)](https://raw.githubusercontent.com/VALAWAI/C0_email_sensor/ASYNCAPI_1.0.0/asyncapi.yml)
- - VALAWAI API: [1.2.0 (March 9, 2024)](https://raw.githubusercontent.com/valawai/MOV/ASYNCAPI_1.2.0/asyncapi.yml)
- - Developed By: [IIIA-CSIC](https://www.iiia.csic.es)
- - License: [GPL 3](LICENSE)
- 
- 
-## Generate Docker image
+- **Type**: [C0](https://valawai.github.io/docs/components/C0/)
+- **Name**: E-mail sensor
+- **Documentation**: [https://valawai.github.io/docs/components/C0/email_sensor](https://valawai.github.io/docs/components/C0/email_sensor)
+- **Versions**:
+  - **Stable version**: [1.3.0 (June 3, 2025)](https://github.com/VALAWAI/C0_email_sensor/tree/1.3.0)
+  - **API**: [1.0.0 (March 16, 2024)](https://raw.githubusercontent.com/VALAWAI/C0_email_sensor/ASYNCAPI_1.0.0/asyncapi.yml)
+  - **Required MOV API**: [1.2.0 (March 9, 2024)](https://raw.githubusercontent.com/valawai/MOV/ASYNCAPI_1.2.0/asyncapi.yml)
+- **Developed By**: [IIIA-CSIC](https://www.iiia.csic.es)
+- **License**: [GPL v3](LICENSE)
+- **Technology Readiness Level (TLR)**: [3](https://valawai.github.io/docs/components/C0/email_sensor/tlr)
 
-The easy way to create the docker image of this component is to execute
-the next script.
- 
- ```
-./buildDockerImages.sh
-```
+## Usage
 
-At the end you must have the docker image **valawai/c0_email_sensor:Z.Y.Z**
-where **X.Y.Z** will be the version of the component. If you want to have
-the image with another tag, for example **latest**, you must call the script
-with this tag as a parameter, for example:
+This component can be used to read e-mails that comes outside the value-aware infrastructure.
 
-```
-./buildDockerImages.sh latest
-```
+## Deployment
 
-And you will obtain the container **valawai/c0_email_sensor:latest**.
+The **C0 E-mail Sensor** is designed to run as a Docker container, working within the [Master Of VALAWAI (MOV)](https://valawai.github.io/docs/architecture/implementations/mov) ecosystem. For a complete guide, including advanced setups, refer to the [component's full deployment documentation](https://valawai.github.io/docs/components/C0/email_sensor/deploy).
 
+Here's how to quickly get it running:
 
-### Docker environment variables
+1. ### Build the Docker Image
 
-The most useful environment variables on the docker image are:
+    First, you need to build the Docker image. Go to the project's root directory and run:
 
- - **RABBITMQ_HOST** is the host where the RabbitMQ is available.
-  The default value is ___mov-mq___.
- - **RABBITMQ_PORT** defines the port of the RabbitMQ.
-  The default value is ___5672___.
- - **RABBITMQ_USERNAME** contains the name of the user that can access the RabbitMQ.
-  The default value is ___mov___.
- - **RABBITMQ_PASSWORD** is the password to authenticate the user that can access the RabbitMQ.
-  The default value is ___password___.
- - **MAIL_PROTOCOL** defines the protocol to connect to the e-mail server to fetch the e-mails.
-  It can be **pop3**, **pop3s**, **imap** or **imap2**. The default value is ___imaps___.
- - **MAIL_HOST** is the host to the e-mail server. The default value is ___mail___.
- - **MAIL_PORT** defines the port of the e-mail server. The default value is ___993___.
- - **MAIL_SECURED** this is **true** is the connection uses the secured TLS.
-  The default value is ___true___.
- - **MAIL_USERNAME** contains the name of the user that can access the e-mail server.
-  The default value is ___user___.
- - **MAIL_PASSWORD** defines the credential to authenticate the user that can access the e-mail server.
-  The default value is ___password__.
- - **C0_EMAIL_SENSOR_FETCHING_INTERVAL** contains the seconds that have to pass between fetching e-mail
-  intervals. The default value is ___60__.
- - **LOG_LEVEL** defines the level of the log messages to be stored.
-  The default value is ___INFO__.
- - **QUARKUS_HTTP_HOST** contains the server host that will expose the REST health endpoints.
- The default value is __0.0.0.0__.
- - **QUARKUS_HTTP_PORT** defines the server port that will expose the REST health endpoints.
- The default value is __8080__.
+    ```bash
+    ./buildDockerImages.sh -t latest
+    ```
 
-The component is developed using [Quarkus](https://quarkus.io/), so you can change any environment
-variable [defined on it](https://quarkus.io/guides/all-config).
+    This creates the `valawai/c0_email_sensor:latest` Docker image, which is referenced in the `docker-compose.yml` file.
 
+2. ### Start the Component
 
-### Docker health check
+    You have two main ways to start the component:
 
-This component exposes the following REST endpoints to check their health status.
+    A. **With MOV and Mail Catcher (for testing):**
+    To run the C0 E-mail Sensor with the MOV and a local email testing tool (Mail Catcher), use:
 
- - **/q/health/live** can be used to check if the component is running.
- - **/q/health/ready** can be used to check if the component can process the messages
-  from the VALAWAI infrastructure.
- - **/q/health/started** can be used to check if the component has started.
- - **/q/health** can be used to obtain all the previous check procedures in the component.
- 
-All of them will return a JSON which will have the **status** of the state (**UP** or **DOWN**)
-and the list of **checks** that have been evaluated. It looks like the following example was obtained
-from doing a **GET** over the **/q/health** endpoint.
+    ```bash
+    COMPOSE_PROFILES=all docker compose up -d
+    ```
 
- 
- ```json
- {
-    "status": "UP",
-    "checks": [
-        {
-            "name": "SmallRye Reactive Messaging - liveness check",
-            "status": "UP",
-            "data": {
-                "registered": "[OK]",
-                "change_parameters": "[OK]",
-                "send_log": "[OK]",
-                "send_unregister_component": "[OK]",
-                "send_register_component": "[OK]",
-                "send_email": "[OK]"
-            }
-        },
-        {
-            "name": "Registered C0 email sensor",
-            "status": "UP"
-        },
-        {
-            "name": "SmallRye Reactive Messaging - readiness check",
-            "status": "UP",
-            "data": {
-                "registered": "[OK]",
-                "change_parameters": "[OK]",
-                "send_log": "[OK]",
-                "send_unregister_component": "[OK]",
-                "send_register_component": "[OK]",
-                "send_email": "[OK]"
-            }
-        },
-        {
-            "name": "SmallRye Reactive Messaging - startup check",
-            "status": "UP"
-        }
-    ]
-}
- ```
- 
-An alternative is to see the state of the component using the health user interface that
-is exposed at [/q/health-ui/](http://localhost:8080/q/health-ui/).
- 
-These endpoints are useful to do the **healthcheck** in a **docker compose**. Thus, you can add
-the following section into the service of the component.
+    Once started, you can access:
 
-```
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:8080/q/health | grep -m 1 -P \"^[\\s|\\{|\\\"]+status[\\s|\\:|\\\"]+.+\\\"\" |grep -q \"\\\"UP\\\"\""]
-      interval: 1m
-      timeout: 10s
-      retries: 5
-      start_period: 1m
-      start_interval: 5s
-```
+    - **MOV:** [http://localhost:8081](http://localhost:8081)
+    - **RabbitMQ UI:** [http://localhost:8082](http://localhost:8082) (credentials: `mov:password`)
+    - **Mail Catcher UI:** [http://localhost:8083](http://localhost/8083)
 
-Finally, remember that the  docker environment variables **QUARKUS_HTTP_HOST** and **QUARKUS_HTTP_PORT**
-can be used to configure where the REST health endpoints will be exposed by the component.
+    B. **As a Standalone Component (connecting to an existing MOV/RabbitMQ):**
+    If you already have MOV running or want to connect to a remote RabbitMQ, you'll need a [`.env` file](https://docs.docker.com/compose/environment-variables/env-file/) with connection details. Create a `.env` file in the same directory as your `docker-compose.yml` like this:
 
+    ```properties
+    MOV_MQ_HOST=host.docker.internal
+    MOV_MQ_USERNAME=mov
+    MOV_MQ_PASSWORD=password
+    C0_EMAIL_SENSOR_PORT=9080
+    MAIL_WEB=9083
+    ```
 
-## Deploy
+    Find full details on these and other variables in the [component's dedicated deployment documentation](https://valawai.github.io/docs/components/C0/email_sensor/deploy).
+    Once your `.env` file is configured, start only the email sensor and mail catcher (without MOV) using:
 
-On the file [docker-compose.yml](docker-compose.yml), you can see how the docker image
-of this component can be deployed on a valawai environment. On this file are defined
-the profiles **mov** and **mail**. The first one is to launch
-the [Master Of Valawai (MOV)](https://github.com/VALAWAI/MOV) and the second one is to start
-a [mocked e-mail server](https://github.com/dbck/docker-mailtrap). You can use the next
-command to start this component with the MOV and the mail server.
+    ```bash
+    COMPOSE_PROFILES=mail,component docker compose up -d
+    ```
 
-```
-COMPOSE_PROFILES=mov,mail docker compose up -d
-```
+3. ### Stop All Containers
 
-After that, if you open a browser and go to [http://localhost:8080](http://localhost:8080)
-you can view the MOV user interface. Also, you can access the RabbitMQ user interface
-at [http://localhost:8081](http://localhost:8081) with the credentials **mov:password**.
-Finally, you can access the mail server user interface at [http://localhost:8082](http://localhost:8082)
-with the credentials **user:password**.
+    To stop all containers launched, run:
 
-The docker compose defines some variables that can be modified by creating a file named
-[**.env**](https://docs.docker.com/compose/environment-variables/env-file/) where 
-you write the name of the variable plus equals plus the value.  As you can see in
-the next example.
+    ```bash
+    COMPOSE_PROFILES=all docker compose down
+    ```
 
-```
-MQ_HOST=rabbitmq.valawai.eu
-MQ_USERNAME=c0_email_sensor
-MQ_PASSWORD=lkjagb_ro82t¿134
-```
+    This command stops the MOV, RabbitMQ, and Mail Catcher containers.
 
-The defined variables are:
+## Development environment
 
+To ensure a consistent and isolated development experience, this component is configured
+to use Docker. This approach creates a self-contained environment with all the necessary
+software and tools for building and testing, minimizing conflicts with your local system
+and ensuring reproducible results.
 
- - **C0_EMAIL_SENSOR_TAG** is the tag of the C0 email sensor docker image to use.
-  The default value is ___latest___.
- - **MQ_HOST** is the hostname of the message queue broker that is available.
-  The default value is ___mq___.
- - **MQ_PORT** is the port of the message queue broker is available.
-  The default value is ___5672___.
- - **MQ_UI_PORT** is the port of the message queue broker user interface is available.
-  The default value is ___8081___.
- - **MQ_USER** is the name of the user that can access the message queue broker.
-  The default value is ___mov___.
- - **MQ_PASSWORD** is the password to authenticate the user that can access the message queue broker.
-  The default value is ___password___.
- - **MAIL_PROTOCOL** defines the protocol to connect to the e-mail server to fetch the e-mails.
-  It can be **pop3**, **pop3s**, **imap** or **imap2**. The default value is ___imaps___.
- - **MAIL_HOST** is the host to the e-mail server. The default value is ___mail___.
- - **MAIL_PORT** defines the port of the e-mail server. The default value is ___993___.
- - **MAIL_SECURED** this is **true** is the connection uses the secured TLS.
-  The default value is ___true___.
- - **MAIL_USERNAME** contains the name of the user that can access the e-mail server.
-  The default value is ___user___.
- - **MAIL_PASSWORD** defines the credential to authenticate the user that can access the e-mail server.
-  The default value is ___password__.
- - **MAILTRAP_TAG** is the tag of the [email server](https://github.com/dbck/docker-mailtrap) docker image to use.
-  The default value is ___latest___.
- - **RABBITMQ_TAG** is the tag of the RabbitMQ docker image to use.
-  The default value is ___management___.
- - **MONGODB_TAG** is the tag of the MongoDB docker image to use.
-  The default value is ___latest___.
- - **MONGO_PORT** is the port where MongoDB is available.
-  The default value is ___27017___.
- - **MONGO_ROOT_USER** is the name of the root user for the MongoDB.
-  The default value is ___root___.
- - **MONGO_ROOT_PASSWORD** is the password of the root user for the MongoDB.
-  The default value is ___password___.
- - **MONGO_LOCAL_DATA** is the local directory where the MongoDB will be stored.
-  The default value is ___~/mongo_data/movDB___.
- - **DB_NAME** is the name of the database used by the MOV.
-  The default value is ___movDB___.
- - **DB_USER_NAME** is the name of the user used by the MOV to access the database.
-  The default value is ___mov___.
- - **DB_USER_PASSWORD** is the password of the user used by the MOV to access the database.
-  The default value is ___password___.
- - **MOV_TAG** is the tag of the MOV docker image to use.
-  The default value is ___latest___.
- - **MOV_UI_PORT** is the port where the MOV user interface is available.
-  The default value is ___8080___.
+You can launch the development environment by running this script:
 
-The database is only created the first time where script is called. So, if you modify
-any of the database parameters you must create again the database. For this, you must
-remove the directory defined by the parameter **MONGO_LOCAL_DATA** and start again
-the **docker compose**.
-
-You can stop all the started containers with the command:
-
-```
-COMPOSE_PROFILES=mov,mail docker compose down
-```
-  
-## Development
-
-You can start the development environment with the script:
-
-```shell script
+```bash
 ./startDevelopmentEnvironment.sh
 ```
 
-After that, you have a bash shell where you can interact with
-the Quarkus development environment. You can start the development
-server with the command:
+Once the environment starts, you'll find yourself in a bash shell, ready to interact with
+the Quarkus development environment. You'll also have access to the following integrated tools:
 
-```shell script
-startServer
+- **Master of VALAWAI**: The central component managing topology connections between services.
+ Its web interface is accessible at [http://localhost:8081](http://localhost:8081).
+- **RabbitMQ** The message broker for inter-component communication. The management web interface
+ is at [http://localhost:8082](http://localhost:8082), with credentials `mov**:**password`.
+- **MongoDB**: The database used by the MOV, named `movDB`, with user credentials `mov:password`.
+- **Mongo express**: A web interface for interacting with MongoDB, available at
+ [http://localhost:8084](http://localhost:8084), also with credentials `mov**:**password`.
+- **Mail catcher**A tool to capture and inspect sent emails. Its web interface is at
+  [http://localhost:8083](http://localhost:8083).
+
+Within this console, you can use the official [`quarkus` client](https://quarkus.io/guides/cli-tooling#using-the-cli)
+or any of these convenient commands:
+
+- `startServer`: To initiate the development server.
+- `mvn clean`: To clean the project (compiled and generated code).
+- `mvn test`: To run all project tests.
+- `mvn -DuseDevMOV=true test`: To execute tests using the already started Master of VALAWAI instance,
+ rather than an independent container.
+  
+To exit the development environment, simply type `exit` in the bash shell or run the following script:
+
+```bash
+./stopDevelopmentEnvironment.sh
 ```
 
-Alternatively, to run the test using the started Quarkus client, you can use Maven.
+In either case, the development environment will gracefully shut down, including all activated services
+like MOV, RabbitMQ, MongoDB, Mongo Express, and the Mail Catcher.
 
- * __mvn test__  to run all the tests
- * __mvnd test__  to run all the tests on debugging mode.
- * __mvn -DuseDevMOV=true test__  to run all the tests using the started Master of VALAWAI,
- 	instead of an independent container.
+## Helpful Links
 
-Also, this starts the tools:
+Here's a collection of useful links related to this component and the VALAWAI ecosystem:
 
- * **RabbitMQ**  the server to manage the messages to interchange with the components.
- The management web interface can be opened at [http://localhost:8081](http://localhost:8081) with the credential
- **mov**:**password**.
- * **MongoDB**  the database to store the data used by the MOV. The database is named as **movDB** and the user credentials **mov:password**.
- * **Mongo express**  the web interface to interact with the MongoDB. The web interface
-  can be opened at [http://localhost:8082](http://localhost:8082) with the credential
- **mov**:**password**.
- * **Mail catcher**  the component that capture the sent mails.
-  The web interface can be opened at [http://localhost:8083](http://localhost:8083).
- * **Master of VALAWAI**  the component that mantains the topology connections between components.
-  The web interface can be opened at [http://localhost:8084](http://localhost:8084).
-
-
-## Links
-
- - [C0 E-mail sensor documentation](https://valawai.github.io/docs/components/C0/email_sensor)
- - [Master Of VALAWAI tutorial](https://valawai.github.io/docs/tutorials/mov)
- - [VALWAI documentation](https://valawai.github.io/docs/)
- - [VALAWAI project web site](https://valawai.eu/)
- - [Twitter](https://twitter.com/ValawaiEU)
- - [GitHub](https://github.com/VALAWAI)
+- **C0 E-mail Sensor Documentation**: [https://valawai.github.io/docs/components/C0/email_sensor](https://valawai.github.io/docs/components/C0/email_sensor)
+- **Master Of VALAWAI (MOV)**: [https://valawai.github.io/docs/architecture/implementations/mov/](https://valawai.github.io/docs/architecture/implementations/mov/)
+- **VALAWAI Main Documentation**: [https://valawai.github.io/docs/](https://valawai.github.io/docs/)
+- **VALAWAI on GitHub**: [https://github.com/VALAWAI](https://github.com/VALAWAI)
+- **VALAWAI Official Website**: [https://valawai.eu/](https://valawai.eu/)
+- **VALAWAI on X (formerly Twitter)**: [https://x.com/ValawaiEU](https://x.com/ValawaiEU)

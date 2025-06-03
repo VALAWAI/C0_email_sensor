@@ -1,6 +1,11 @@
 # C0_email_sensor
 
 
+## Version 1.3.0 (June 3, 2025)
+
+- Improve documentation.
+
+
 ## Version 1.2.0 (October 16, 2024)
 
  - Add live check support
