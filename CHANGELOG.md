@@ -1,7 +1,7 @@
 # C0_email_sensor
 
 
-## Version 1.3.0 (June 3, 2025)
+## Version 1.3.0 (June 4, 2025)
 
 - Improve documentation.
 

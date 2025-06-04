@@ -1,7 +1,7 @@
 # C0_email_sensor
 
-The E-mail sensor (C0) is designed component extracts information from e-mails and propagates it
-to all the infrastructure. 
+The E-mail sensor (C0) is designed component extracts information from e-mails
+and propagates it to all the infrastructure. 
 
 
 ## Summary
@@ -10,7 +10,7 @@ to all the infrastructure.
 - **Name**: E-mail sensor
 - **Documentation**: [https://valawai.github.io/docs/components/C0/email_sensor](https://valawai.github.io/docs/components/C0/email_sensor)
 - **Versions**:
-  - **Stable version**: [1.3.0 (June 3, 2025)](https://github.com/VALAWAI/C0_email_sensor/tree/1.3.0)
+  - **Stable version**: [1.3.0 (June 4, 2025)](https://github.com/VALAWAI/C0_email_sensor/tree/1.3.0)
   - **API**: [1.0.0 (March 16, 2024)](https://raw.githubusercontent.com/VALAWAI/C0_email_sensor/ASYNCAPI_1.0.0/asyncapi.yml)
   - **Required MOV API**: [1.2.0 (March 9, 2024)](https://raw.githubusercontent.com/valawai/MOV/ASYNCAPI_1.2.0/asyncapi.yml)
 - **Developed By**: [IIIA-CSIC](https://www.iiia.csic.es)
@@ -19,11 +19,15 @@ to all the infrastructure.
 
 ## Usage
 
-This component can be used to read e-mails that comes outside the value-aware infrastructure.
+This component can be used to read e-mails from a server and propagate them as messages
+in the infrastructure.
 
 ## Deployment
 
-The **C0 E-mail Sensor** is designed to run as a Docker container, working within the [Master Of VALAWAI (MOV)](https://valawai.github.io/docs/architecture/implementations/mov) ecosystem. For a complete guide, including advanced setups, refer to the [component's full deployment documentation](https://valawai.github.io/docs/components/C0/email_sensor/deploy).
+The **C0 E-mail Sensor** is designed to run as a Docker container, working within 
+the [Master Of VALAWAI (MOV)](https://valawai.github.io/docs/architecture/implementations/mov) 
+ecosystem. For a complete guide, including advanced setups, refer to the 
+[component's full deployment documentation](https://valawai.github.io/docs/components/C0/email_sensor/deploy).
 
 Here's how to quickly get it running:
 
@@ -41,8 +45,8 @@ Here's how to quickly get it running:
 
     You have two main ways to start the component:
 
-    A. **With MOV and Mail Catcher (for testing):**
-    To run the C0 E-mail Sensor with the MOV and a local email testing tool (Mail Catcher), use:
+    A. **With MOV and Mailtrap:**
+    To run the C0 E-mail Sensor with the MOV and a local email testing tool (Mail Trap), use:
 
     ```bash
     COMPOSE_PROFILES=all docker compose up -d
@@ -52,10 +56,12 @@ Here's how to quickly get it running:
 
     - **MOV:** [http://localhost:8081](http://localhost:8081)
     - **RabbitMQ UI:** [http://localhost:8082](http://localhost:8082) (credentials: `mov:password`)
-    - **Mail Catcher UI:** [http://localhost:8083](http://localhost/8083)
+    - **Mail Trap UI:** [http://localhost:8083](http://localhost/8083) (credentials: `user:password`)
 
     B. **As a Standalone Component (connecting to an existing MOV/RabbitMQ):**
-    If you already have MOV running or want to connect to a remote RabbitMQ, you'll need a [`.env` file](https://docs.docker.com/compose/environment-variables/env-file/) with connection details. Create a `.env` file in the same directory as your `docker-compose.yml` like this:
+    If you already have MOV running or want to connect to a remote RabbitMQ, you'll need a
+    [`.env` file](https://docs.docker.com/compose/environment-variables/env-file/) with connection 
+    details. Create a `.env` file in the same directory as your `docker-compose.yml` like this:
 
     ```properties
     MOV_MQ_HOST=host.docker.internal
@@ -66,7 +72,7 @@ Here's how to quickly get it running:
     ```
 
     Find full details on these and other variables in the [component's dedicated deployment documentation](https://valawai.github.io/docs/components/C0/email_sensor/deploy).
-    Once your `.env` file is configured, start only the email sensor and mail catcher (without MOV) using:
+    Once your `.env` file is configured, start only the email sensor and mail trap (without MOV) using:
 
     ```bash
     COMPOSE_PROFILES=mail,component docker compose up -d
@@ -80,7 +86,7 @@ Here's how to quickly get it running:
     COMPOSE_PROFILES=all docker compose down
     ```
 
-    This command stops the MOV, RabbitMQ, and Mail Catcher containers.
+    This command stops the MOV, RabbitMQ, and Mail Trap containers.
 
 ## Development environment
 
@@ -105,8 +111,8 @@ the Quarkus development environment. You'll also have access to the following in
 - **MongoDB**: The database used by the MOV, named `movDB`, with user credentials `mov:password`.
 - **Mongo express**: A web interface for interacting with MongoDB, available at
  [http://localhost:8084](http://localhost:8084), also with credentials `mov**:**password`.
-- **Mail catcher**A tool to capture and inspect sent emails. Its web interface is at
-  [http://localhost:8083](http://localhost:8083).
+- **Mailtrap** A tool to simulate a local email server for developing pourposes. Its web interface is at
+  [http://localhost:8083](http://localhost:8083), with user credentials `user:password`.
 
 Within this console, you can use the official [`quarkus` client](https://quarkus.io/guides/cli-tooling#using-the-cli)
 or any of these convenient commands:
@@ -124,7 +130,7 @@ To exit the development environment, simply type `exit` in the bash shell or run
 ```
 
 In either case, the development environment will gracefully shut down, including all activated services
-like MOV, RabbitMQ, MongoDB, Mongo Express, and the Mail Catcher.
+like MOV, RabbitMQ, MongoDB, Mongo Express, and the Mail Trap.
 
 ## Helpful Links
 
