@@ -20,6 +20,7 @@ import org.eclipse.microprofile.reactive.messaging.Message;
 import eu.valawai.c0.email_sensor.mov.LogService;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
+import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -157,19 +158,10 @@ public class EMailSensor {
 				this.log.debug("Fetcher {0} unread e-mails", messages.size());
 				for (final var message : messages) {
 
-					this.notifier.send(message).handle((success, error) -> {
-
-						if (error == null) {
-
-							this.log.infoWithPayload(message, "Sensed the a new e-mail.");
-							Log.debugv("Sent email {0}.", message);
-
-						} else {
-
-							Log.errorv(error, "Cannot send the e-mail {0}.", message);
-						}
-						return null;
-					});
+					Uni.createFrom().completionStage(this.notifier.send(message)).subscribe().with(any -> {
+						this.log.debugWithPayload(message, "Sensed the a new e-mail.");
+						Log.debugv("Sent email {0}.", message);
+					}, error -> Log.errorv(error, "Cannot send the e-mail {0}.", message));
 
 				}
 			}

@@ -18,6 +18,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 
 import eu.valawai.c0.email_sensor.EMailPayloadTest;
+import io.quarkus.test.common.TestResourceScope;
 import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.core.json.Json;
@@ -32,7 +33,7 @@ import jakarta.inject.Inject;
  * @author UDT-IA, IIIA-CSIC
  */
 @QuarkusTest
-@WithTestResource(value = MOVTestResource.class)
+@WithTestResource(value = MOVTestResource.class, scope = TestResourceScope.GLOBAL)
 public class LogServiceTest {
 
 	/**
@@ -42,7 +43,7 @@ public class LogServiceTest {
 	LogService service;
 
 	/**
-	 * The port where teh Master Of VALAWAI is listening.
+	 * The port where the Master Of VALAWAI is listening.
 	 */
 	@ConfigProperty(name = MOVTestResource.MOV_URL_CONFIG_PROPERTY_NAME, defaultValue = "http://host.docker.internal:8084")
 	String movUrl;
@@ -159,7 +160,7 @@ public class LogServiceTest {
 	 * Check the log message is stored.
 	 *
 	 * @param level    of the log message.
-	 * @param message  of teh log message.
+	 * @param message  of the log message.
 	 * @param payload  of the log message.
 	 * @param duration maximum time to wait the log is stored.
 	 */

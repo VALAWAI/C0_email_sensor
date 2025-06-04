@@ -29,22 +29,12 @@ public class EMailServerTestResource implements QuarkusTestResourceLifecycleMana
 	public static final String MAIL_TRAPPER_DOCKER_NAME = "dbck/mailtrap:latest";
 
 	/**
-	 * The user name to connect to the mail server.
-	 */
-	private static final String MAIL_USER_NAME = "mailtrap";
-
-	/**
-	 * The user password to connect to the mail server.
-	 */
-	private static final String MAIL_USER_PASSWORD = "password";
-
-	/**
 	 * The mongo service container.
 	 */
+	@SuppressWarnings("resource")
 	static GenericContainer<?> mailContainer = new GenericContainer<>(DockerImageName.parse(MAIL_TRAPPER_DOCKER_NAME))
-			.withStartupAttempts(1).withEnv("MAILTRAP_USER", MAIL_USER_NAME)
-			.withEnv("MAILTRAP_PASSWORD", MAIL_USER_PASSWORD).withExposedPorts(25, 993)
-			.waitingFor(Wait.forListeningPort());
+			.withStartupAttempts(1).withEnv("MAILTRAP_USER", "user").withEnv("MAILTRAP_PASSWORD", "password")
+			.withExposedPorts(25, 993).waitingFor(Wait.forListeningPorts(25, 993));
 
 	/**
 	 * Start the mocked server.
@@ -55,14 +45,23 @@ public class EMailServerTestResource implements QuarkusTestResourceLifecycleMana
 	public Map<String, String> start() {
 
 		final var config = new HashMap<String, String>();
-		config.put("mail.username", MAIL_USER_NAME);
-		config.put("mail.userpassword", MAIL_USER_PASSWORD);
+		config.put("mail.protocol", "imaps");
+		config.put("mail.secured", "true");
+		config.put("mail.user.name", "user");
+		config.put("mail.user.password", "password");
+		config.put("mail.host", "host.docker.internal");
 
-		if (!Boolean.parseBoolean(System.getProperty("useDevMail"))) {
+		if (Boolean.parseBoolean(System.getProperty("useDevMail"))) {
 
-			mailContainer.start();
-			final var host = mailContainer.getHost();
-			config.put("mail.host", host);
+			config.put("mail.port", "1993");
+			config.put("mail.smtp.port", "1025");
+
+		} else {
+
+			if (!mailContainer.isRunning()) {
+
+				mailContainer.start();
+			}
 			config.put("mail.port", String.valueOf(mailContainer.getMappedPort(993)));
 			config.put("mail.smtp.port", String.valueOf(mailContainer.getMappedPort(25)));
 		}

@@ -42,14 +42,14 @@ public class EMailSender {
 	/**
 	 * The user name to access to e-mail server.
 	 */
-	@ConfigProperty(name = "mail.username", defaultValue = "user")
-	String username;
+	@ConfigProperty(name = "mail.user.name", defaultValue = "user")
+	String userName;
 
 	/**
 	 * The password to access to e-mail server.
 	 */
-	@ConfigProperty(name = "mail.password", defaultValue = "password")
-	String password;
+	@ConfigProperty(name = "mail.user.password", defaultValue = "password")
+	String userPassword;
 
 	/**
 	 * Send an e-mail.
@@ -71,7 +71,7 @@ public class EMailSender {
 			final var session = Session.getInstance(props, new javax.mail.Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(EMailSender.this.username, EMailSender.this.password);
+					return new PasswordAuthentication(EMailSender.this.userName, EMailSender.this.userPassword);
 				}
 			});
 			final var msg = new MimeMessage(session);

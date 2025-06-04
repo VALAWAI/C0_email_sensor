@@ -59,14 +59,14 @@ public class EMailFetcher {
 	/**
 	 * The name for the user that can log in into the mail server.
 	 */
-	@ConfigProperty(name = "mail.username", defaultValue = "mov")
-	String user;
+	@ConfigProperty(name = "mail.user.name", defaultValue = "user")
+	String userName;
 
 	/**
 	 * The password for the user that can log in into the mail server.
 	 */
-	@ConfigProperty(name = "mail.userpassword", defaultValue = "password")
-	String password;
+	@ConfigProperty(name = "mail.user.password", defaultValue = "password")
+	String userPassword;
 
 	/**
 	 * Fetch for the e-mail that has not been read.
@@ -94,7 +94,7 @@ public class EMailFetcher {
 			final Session emailSession = Session.getDefaultInstance(properties);
 			final Store store = emailSession.getStore(this.protocol);
 
-			store.connect(this.host, this.user, this.password);
+			store.connect(this.host, this.userName, this.userPassword);
 			final Folder inbox = store.getFolder("INBOX");
 			inbox.open(Folder.READ_WRITE);
 			final var newCount = inbox.getNewMessageCount();

@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 
+import io.quarkus.test.common.TestResourceScope;
 import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -26,7 +27,7 @@ import jakarta.inject.Inject;
  * @author UDT-IA, IIIA-CSIC
  */
 @QuarkusTest
-@WithTestResource(value = MOVTestResource.class)
+@WithTestResource(value = MOVTestResource.class, scope = TestResourceScope.GLOBAL)
 public class ComponentLifeCycleTest {
 
 	/**

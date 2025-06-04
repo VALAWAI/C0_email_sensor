@@ -115,7 +115,7 @@ components:
           type: integer
           min: 1
           description: The seconds between fetching e-mails intervals.
-          example:
+          examples:
            - 300
            
     component_payload:

@@ -25,7 +25,7 @@ public class ComponentLiveCheck implements HealthCheck {
 	/**
 	 * The name of the check.
 	 */
-	public static final String NAME = "Registered C0 email actuator";
+	public static final String NAME = "Registered C0 email sensor";
 
 	/**
 	 * The status of the component.

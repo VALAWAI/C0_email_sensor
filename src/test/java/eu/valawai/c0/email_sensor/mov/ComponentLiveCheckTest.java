@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.quarkus.test.common.TestResourceScope;
 import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -31,7 +32,7 @@ import jakarta.inject.Inject;
  * @author UDT-IA, IIIA-CSIC
  */
 @QuarkusTest
-@WithTestResource(value = MOVTestResource.class)
+@WithTestResource(value = MOVTestResource.class, scope = TestResourceScope.GLOBAL)
 public class ComponentLiveCheckTest {
 
 	/**

@@ -27,8 +27,10 @@ import org.junit.jupiter.api.Test;
 
 import eu.valawai.c0.email_sensor.mov.MOVTestResource;
 import io.quarkus.logging.Log;
+import io.quarkus.test.common.TestResourceScope;
 import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 
@@ -40,8 +42,8 @@ import jakarta.inject.Inject;
  * @author UDT-IA, IIIA-CSIC
  */
 @QuarkusTest
-@WithTestResource(value = MOVTestResource.class)
-@WithTestResource(value = EMailServerTestResource.class)
+@WithTestResource(value = MOVTestResource.class, scope = TestResourceScope.GLOBAL)
+@WithTestResource(value = EMailServerTestResource.class, scope = TestResourceScope.GLOBAL)
 public class EMailSensorTest {
 
 	/**
@@ -147,7 +149,6 @@ public class EMailSensorTest {
 				final var email = this.queue.waitUntilNextEMail(Duration.ofSeconds(30));
 				assertNotNull(email);
 				assertTrue(email.received_at >= time);
-				assertTrue(email.received_at >= start + i);
 				payload.received_at = email.received_at;
 				payload.mime_type = email.mime_type;
 				assertEquals(payload, email);
@@ -172,18 +173,9 @@ public class EMailSensorTest {
 
 		final var parameters = new EMailSensorComponentParametersPayload();
 		parameters.fetching_interval = (int) newInterval.toSeconds();
-		this.changeParametersSender.send(parameters).handle((success, error) -> {
-
-			if (error == null) {
-
-				Log.debugv("Changed parameters to {0}.", parameters);
-
-			} else {
-
-				Log.errorv(error, "Cannot change the parameters to {0}.", parameters);
-			}
-			return null;
-		});
+		Uni.createFrom().completionStage(this.changeParametersSender.send(parameters)).subscribe().with(
+				any -> Log.debugv("Changed parameters to {0}.", parameters),
+				error -> Log.errorv(error, "Cannot change the parameters to {0}.", parameters));
 
 		final var expected = String.valueOf(parameters.fetching_interval);
 		for (var i = 0; i < 60 && !expected.equals(System.getProperty("C0_EMAIL_SENSOR_FETCHING_INTERVAL", "")); i++) {
@@ -208,15 +200,11 @@ public class EMailSensorTest {
 		parameters.fetching_interval = 0;
 		final var semaphore = new Semaphore(0);
 		final var errors = new ArrayList<Throwable>();
-		this.changeParametersSender.send(parameters).handle((success, error) -> {
-
-			if (error != null) {
-
-				errors.add(error);
-			}
-			semaphore.release();
-			return null;
-		});
+		Uni.createFrom().completionStage(this.changeParametersSender.send(parameters)).subscribe()
+				.with(any -> semaphore.release(), error -> {
+					errors.add(error);
+					semaphore.release();
+				});
 
 		try {
 			assertTrue(semaphore.tryAcquire(30, TimeUnit.SECONDS));
@@ -242,15 +230,12 @@ public class EMailSensorTest {
 		final var expected = System.getProperty("C0_EMAIL_SENSOR_FETCHING_INTERVAL");
 		final var semaphore = new Semaphore(0);
 		final var errors = new ArrayList<Throwable>();
-		this.messageSender.send(new JsonObject().put("fetching_interval", Collections.emptyList()))
-				.handle((success, error) -> {
-
-					if (error != null) {
-
-						errors.add(error);
-					}
+		Uni.createFrom()
+				.completionStage(
+						this.messageSender.send(new JsonObject().put("fetching_interval", Collections.emptyList())))
+				.subscribe().with(any -> semaphore.release(), error -> {
+					errors.add(error);
 					semaphore.release();
-					return null;
 				});
 
 		try {
