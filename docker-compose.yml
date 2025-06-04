@@ -46,7 +46,7 @@ services:
       - ${MOV_MQ_PORT:-5672}:5672
       - ${MOV_MQ_UI_PORT:-8082}:15672
     networks:
-      - email_sensor
+      - email_sensor_net
     environment:
       RABBITMQ_DEFAULT_USER: ${MOV_MQ_USER:-mov}
       RABBITMQ_DEFAULT_PASS: ${MOV_MQ_PASSWORD:-password}
@@ -68,7 +68,7 @@ services:
     ports:
       - ${MONGO_LOCAL_PORT:-27017}:27017
     networks:
-      - email_sensor
+      - email_sensor_net
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-root}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
@@ -96,17 +96,20 @@ services:
   mail: 
     image: dbck/mailtrap:${MAILTRAP_TAG:-latest}
     container_name: email_sensor_mail
-    profiles: [mail]
+    profiles: [mail,all]
     hostname: ${MAIL_HOST:-mail}
     ports:
-      - "${MAIL_LOCAL_SMTP:-1025}:25"
-      - "${MAIL_LOCAL_PORT:-1993}:993"
-      - "${MAIL_LOCAL_WEB:-8082}:80"
+      - "${MAIL_SMTP:-1025}:25"
+      - "${MAIL_SMTPS:-1465}:465"
+      - "${MAIL_IMAP:-1587}:587"
+      - "${MAIL_IMAP:-1143}:143"
+      - "${MAIL_IMAPS:-1993}:993"
+      - "${MAIL_WEB:-8083}:80"
     networks:
-      - email_sensor
+      - email_sensor_net
     environment:
-      MAILTRAP_USER: ${MAIL_USERNAME:-user}
-      MAILTRAP_PASSWORD: ${MAIL_PASSWORD:-password}
+      MAILTRAP_USER: ${MAIL_USER_NAME:-user}
+      MAILTRAP_PASSWORD: ${MAIL_USER_PASSWORD:-password}
 
 
   email_sensor:
@@ -114,7 +117,7 @@ services:
     container_name: c0_email_sensor
     profiles: [component, all]
     networks:
-      - email_sensor
+      - email_sensor_net
     depends_on:
       mov:
         condition: service_healthy
@@ -147,7 +150,7 @@ services:
       start_interval: 5s
 
 networks:
-  email_sensor:
+  email_sensor_net:
 
 configs:
   initialize-movDB.js:

@@ -46,7 +46,7 @@ Here's how to quickly get it running:
     You have two main ways to start the component:
 
     A. **With MOV and Mailtrap:**
-    To run the C0 E-mail Sensor with the MOV and a local email testing tool (Mail Trap), use:
+    To run the C0 E-mail Sensor with the MOV and a local email testing tool (Mailtrap), use:
 
     ```bash
     COMPOSE_PROFILES=all docker compose up -d
@@ -56,7 +56,7 @@ Here's how to quickly get it running:
 
     - **MOV:** [http://localhost:8081](http://localhost:8081)
     - **RabbitMQ UI:** [http://localhost:8082](http://localhost:8082) (credentials: `mov:password`)
-    - **Mail Trap UI:** [http://localhost:8083](http://localhost/8083) (credentials: `user:password`)
+    - **Mailtrap UI:** [http://localhost:8083](http://localhost/8083) (credentials: `user:password`)
 
     B. **As a Standalone Component (connecting to an existing MOV/RabbitMQ):**
     If you already have MOV running or want to connect to a remote RabbitMQ, you'll need a
@@ -72,7 +72,7 @@ Here's how to quickly get it running:
     ```
 
     Find full details on these and other variables in the [component's dedicated deployment documentation](https://valawai.github.io/docs/components/C0/email_sensor/deploy).
-    Once your `.env` file is configured, start only the email sensor and mail trap (without MOV) using:
+    Once your `.env` file is configured, start only the email sensor and Mailtrap (without MOV) using:
 
     ```bash
     COMPOSE_PROFILES=mail,component docker compose up -d
@@ -86,7 +86,7 @@ Here's how to quickly get it running:
     COMPOSE_PROFILES=all docker compose down
     ```
 
-    This command stops the MOV, RabbitMQ, and Mail Trap containers.
+    This command stops the MOV, RabbitMQ, and Mailtrap containers.
 
 ## Development environment
 
@@ -130,7 +130,7 @@ To exit the development environment, simply type `exit` in the bash shell or run
 ```
 
 In either case, the development environment will gracefully shut down, including all activated services
-like MOV, RabbitMQ, MongoDB, Mongo Express, and the Mail Trap.
+like MOV, RabbitMQ, MongoDB, Mongo Express, and the Mailtrap.
 
 ## Helpful Links
 
