@@ -1,7 +1,6 @@
 # C0_email_sensor
 
-The E-mail sensor (C0) is designed component extracts information from e-mails
-and propagates it to all the infrastructure. 
+The E-mail sensor (C0) extracts information from e-mails and propagates it to all the infrastructure. 
 
 
 ## Summary
@@ -45,8 +44,8 @@ Here's how to quickly get it running:
 
     You have two main ways to start the component:
 
-    A. **With MOV and Mailtrap:**
-    To run the C0 E-mail Sensor with the MOV and a local email testing tool (Mailtrap), use:
+    A. **With MOV and Mailpit:**
+    To run the C0 E-mail Sensor with the MOV and a local email testing tool (Mailpit), use:
 
     ```bash
     COMPOSE_PROFILES=all docker compose up -d
@@ -56,7 +55,8 @@ Here's how to quickly get it running:
 
     - **MOV:** [http://localhost:8081](http://localhost:8081)
     - **RabbitMQ UI:** [http://localhost:8082](http://localhost:8082) (credentials: `mov:password`)
-    - **Mailtrap UI:** [http://localhost:8083](http://localhost/8083) (credentials: `user:password`)
+    - **Mailpit UI:** [http://localhost:8083](http://localhost/8083) to view the received e-mails
+    and [http://localhost:8083/api/v1/#post-/api/v1/send](http://localhost:8083/api/v1/#post-/api/v1/send) to send e-mails.
 
     B. **As a Standalone Component (connecting to an existing MOV/RabbitMQ):**
     If you already have MOV running or want to connect to a remote RabbitMQ, you'll need a
