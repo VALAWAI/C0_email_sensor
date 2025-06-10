@@ -99,8 +99,8 @@ services:
     profiles: [mail, all]
     hostname: ${MAIL_HOST:-mail}
     ports:
-      - "${MAIL_SMTP:-1025}:1025"
-      - "${MAIL_POP3:-1110}:1110"
+      - "${MAIL_SMTP_PORT:-1025}:1025"
+      - "${MAIL_POP3_PORT:-1110}:1110"
       - "${MAIL_WEB:-8083}:8025"
     networks:
       - email_sensor_net
@@ -129,12 +129,13 @@ services:
       RABBITMQ_PORT: ${MQ_PORT:-5672}
       RABBITMQ_USERNAME: ${MQ_USER:-mov}
       RABBITMQ_PASSWORD: ${MQ_PASSWORD:-password}
-      MAIL_PROTOCOL: "pop3"
-      MAIL_SECURED: false
+      MAIL_PROTOCOL: ${MAIL_PROTOCOL:-pop3}
+      MAIL_SECURED: ${MAIL_SECURED:-false}
       MAIL_HOST: ${MAIL_HOST:-mail}
       MAIL_PORT: ${MAIL_POP3:-1110}
-      MAIL_USERNAME: ${MAIL_USER_NAME:-user}
-      MAIL_PASSWORD: ${MAIL_USER_PASSWORD:-password}
+      MAIL_USER_NAME: ${MAIL_USER_NAME:-user}
+      MAIL_USER_PASSWORD: ${MAIL_USER_PASSWORD:-password}
+	  C0_EMAIL_SENSOR_FETCHING_INTERVAL: ${C0_EMAIL_SENSOR_FETCHING_INTERVAL:-60}
     healthcheck:
       test:
         [
