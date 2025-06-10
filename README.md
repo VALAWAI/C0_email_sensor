@@ -10,7 +10,7 @@ and propagates it to all the infrastructure.
 - **Name**: E-mail sensor
 - **Documentation**: [https://valawai.github.io/docs/components/C0/email_sensor](https://valawai.github.io/docs/components/C0/email_sensor)
 - **Versions**:
-  - **Stable version**: [1.3.0 (June 4, 2025)](https://github.com/VALAWAI/C0_email_sensor/tree/1.3.0)
+  - **Stable version**: [1.3.0 (June 10, 2025)](https://github.com/VALAWAI/C0_email_sensor/tree/1.3.0)
   - **API**: [1.0.0 (March 16, 2024)](https://raw.githubusercontent.com/VALAWAI/C0_email_sensor/ASYNCAPI_1.0.0/asyncapi.yml)
   - **Required MOV API**: [1.2.0 (March 9, 2024)](https://raw.githubusercontent.com/valawai/MOV/ASYNCAPI_1.2.0/asyncapi.yml)
 - **Developed By**: [IIIA-CSIC](https://www.iiia.csic.es)

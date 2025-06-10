@@ -43,7 +43,7 @@ import jakarta.inject.Inject;
  */
 @QuarkusTest
 @WithTestResource(value = MOVTestResource.class, scope = TestResourceScope.GLOBAL)
-@WithTestResource(value = EMailServerTestResource.class, scope = TestResourceScope.GLOBAL)
+@WithTestResource(value = IMAPEMailServerTestResource.class, scope = TestResourceScope.GLOBAL)
 public class EMailSensorTest {
 
 	/**

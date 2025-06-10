@@ -94,23 +94,20 @@ services:
         target: /docker-entrypoint-initdb.d/init-mongo.js
 
   mail: 
-    image: dbck/mailtrap:${MAILTRAP_TAG:-latest}
-    container_name: email_sensor_mail
-    profiles: [mail,all]
+    image: axllent/mailpit:${MAILPIT_TAG:-latest}
+    container_name: mail
+    profiles: [mail, all]
     hostname: ${MAIL_HOST:-mail}
     ports:
-      - "${MAIL_SMTP:-1025}:25"
-      - "${MAIL_SMTPS:-1465}:465"
-      - "${MAIL_IMAP:-1587}:587"
-      - "${MAIL_IMAP:-1143}:143"
-      - "${MAIL_IMAPS:-1993}:993"
-      - "${MAIL_WEB:-8083}:80"
+      - "${MAIL_SMTP:-1025}:1025"
+      - "${MAIL_POP3:-1110}:1110"
+      - "${MAIL_WEB:-8083}:8025"
     networks:
       - email_sensor_net
     environment:
-      MAILTRAP_USER: ${MAIL_USER_NAME:-user}
-      MAILTRAP_PASSWORD: ${MAIL_USER_PASSWORD:-password}
-
+      MP_POP3_AUTH: "${MAIL_USER_NAME:-user}:${MAIL_USER_PASSWORD:-password}"
+      MP_SMTP_AUTH: "${MAIL_USER_NAME:-user}:${MAIL_USER_PASSWORD:-password}"
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
 
   email_sensor:
     image: valawai/c0_email_sensor:${C0_EMAIL_SENSOR_TAG:-latest}
@@ -132,11 +129,12 @@ services:
       RABBITMQ_PORT: ${MQ_PORT:-5672}
       RABBITMQ_USERNAME: ${MQ_USER:-mov}
       RABBITMQ_PASSWORD: ${MQ_PASSWORD:-password}
-      MAIL_PROTOCOL: ${MAIL_PROTOCOL:-imaps}
+      MAIL_PROTOCOL: "pop3"
+      MAIL_SECURED: false
       MAIL_HOST: ${MAIL_HOST:-mail}
-      MAIL_PORT: ${MAIL_PORT:-993}
-      MAIL_USERNAME: ${MAIL_USERNAME:-user}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-password}
+      MAIL_PORT: ${MAIL_POP3:-1110}
+      MAIL_USERNAME: ${MAIL_USER_NAME:-user}
+      MAIL_PASSWORD: ${MAIL_USER_PASSWORD:-password}
     healthcheck:
       test:
         [

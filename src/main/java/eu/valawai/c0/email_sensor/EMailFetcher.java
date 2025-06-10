@@ -8,16 +8,15 @@
 
 package eu.valawai.c0.email_sensor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.Address;
 import javax.mail.Flags.Flag;
 import javax.mail.Folder;
-import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.internet.InternetAddress;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -69,6 +68,12 @@ public class EMailFetcher {
 	String userPassword;
 
 	/**
+	 * The pattern to the folders that can contains the e-mails to be read.
+	 */
+	@ConfigProperty(name = "mail.inbox.pattern", defaultValue = "INBOX")
+	String inboxPattern;
+
+	/**
 	 * Fetch for the e-mail that has not been read.
 	 *
 	 * @return the fetched unread e-mail or {@code null} if cannot fetch the
@@ -78,6 +83,7 @@ public class EMailFetcher {
 
 		try {
 
+			Log.debugv("Start fetching unread e-mails.");
 			final var properties = new java.util.Properties();
 			properties.put("mail.store.protocol", this.protocol);
 			if (this.secured) {
@@ -95,42 +101,20 @@ public class EMailFetcher {
 			final Store store = emailSession.getStore(this.protocol);
 
 			store.connect(this.host, this.userName, this.userPassword);
-			final Folder inbox = store.getFolder("INBOX");
-			inbox.open(Folder.READ_WRITE);
-			final var newCount = inbox.getNewMessageCount();
+			final Folder root = store.getDefaultFolder();
+			final var folders = root.list(this.inboxPattern);
 			final var emails = new ArrayList<EMailPayload>();
-			if (newCount > 0) {
+			if (this.protocol.toLowerCase().indexOf("pop3") > -1) {
 
-				final var messages = inbox.getMessages();
-				for (final var message : messages) {
+				this.fetchPOP3EMails(emails, folders);
 
-					final var flags = message.getFlags();
-					if (!flags.contains(Flag.SEEN) && !flags.contains(Flag.DRAFT) && !flags.contains(Flag.DELETED)
-							&& flags.contains(Flag.RECENT)) {
+			} else {
 
-						message.setFlag(Flag.SEEN, true);
-						final var email = new EMailPayload();
-						email.addresses = new ArrayList<>();
-						this.fillInWithType(email, EMailAddressType.FROM, message.getFrom());
-						this.fillInWithType(email, EMailAddressType.TO, message.getRecipients(RecipientType.TO));
-						this.fillInWithType(email, EMailAddressType.CC, message.getRecipients(RecipientType.CC));
-						this.fillInWithType(email, EMailAddressType.BCC, message.getRecipients(RecipientType.BCC));
-						email.subject = message.getSubject();
-						email.mime_type = message.getContentType();
-						email.content = String.valueOf(message.getContent()).trim();
-						final var date = message.getReceivedDate();
-						if (date != null) {
-
-							email.received_at = date.toInstant().getEpochSecond();
-						}
-						emails.add(email);
-
-					}
-
-				}
+				this.fetchIMAPUnseenEMails(emails, folders);
 			}
-			inbox.close(false);
+
 			store.close();
+
 			return emails;
 
 		} catch (final Throwable error) {
@@ -142,52 +126,58 @@ public class EMailFetcher {
 	}
 
 	/**
-	 * Add to the e-mail payload the addresses of a type.
+	 * Fetch all the the e-mail from a POP3 connection.
 	 *
-	 * @param payload   to add the addresses.
-	 * @param type      of address to fill in.
-	 * @param addresses to convert.
+	 * @param emails  to add the fetched e-mails.
+	 * @param folders to fetch the e-mails.
+	 *
+	 * @throws MessagingException If can not get the data from the message.
+	 * @throws IOException        If it can not read the message content.
 	 */
-	protected void fillInWithType(EMailPayload payload, EMailAddressType type, Address[] addresses) {
+	protected void fetchPOP3EMails(List<EMailPayload> emails, Folder[] folders) throws IOException, MessagingException {
 
-		if (addresses != null) {
+		for (final var inbox : folders) {
 
-			for (final var address : addresses) {
+			inbox.open(Folder.READ_WRITE);
+			final var messages = inbox.getMessages();
+			for (final var message : messages) {
 
-				final var addressPayload = this.toEMailAddressPayload(address);
-				if (addressPayload != null) {
+				message.setFlag(Flag.DELETED, true);
+				final var email = EMailPayload.from(message);
+				emails.add(email);
 
-					addressPayload.type = type;
-					payload.addresses.add(addressPayload);
-				}
 			}
+			inbox.close(true);
 		}
 	}
 
 	/**
-	 * Convert an address to a payload.
+	 * Fetch for the e-mail that has not been read.
 	 *
-	 * @param address to convert.
+	 * @param emails  to add the fetched e-mails.
+	 * @param folders to fetch the e-mails.
 	 *
-	 * @return the payload associated to the address.
+	 * @throws MessagingException If can not get the data from the message.
+	 * @throws IOException        If it can not read the message content.
 	 */
-	protected EMailAddressPayload toEMailAddressPayload(Address address) {
+	protected void fetchIMAPUnseenEMails(List<EMailPayload> emails, Folder[] folders)
+			throws IOException, MessagingException {
 
-		if (address == null) {
+		for (final var inbox : folders) {
 
-			return null;
+			inbox.open(Folder.READ_WRITE);
+			final var messages = inbox.getMessages();
+			for (final var message : messages) {
 
-		} else if (address instanceof final InternetAddress internet) {
+				final var flags = message.getFlags();
+				if (!flags.contains(Flag.SEEN) && !flags.contains(Flag.DELETED) && !flags.contains(Flag.DRAFT)) {
 
-			final var payload = new EMailAddressPayload();
-			payload.name = internet.getPersonal();
-			payload.address = internet.getAddress();
-			return payload;
-
-		} else {
-
-			final var value = address.toString().trim();
-			return EMailAddressPayload.decode(value);
+					message.setFlag(Flag.SEEN, true);
+					final var email = EMailPayload.from(message);
+					emails.add(email);
+				}
+			}
+			inbox.close(false);
 		}
 	}
 

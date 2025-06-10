@@ -21,7 +21,7 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
  *
  * @author VALAWAI
  */
-public class EMailServerTestResource implements QuarkusTestResourceLifecycleManager {
+public class IMAPEMailServerTestResource implements QuarkusTestResourceLifecycleManager {
 
 	/**
 	 * The name of the mongo docker image to use.

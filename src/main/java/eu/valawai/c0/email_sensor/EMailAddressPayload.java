@@ -8,6 +8,9 @@
 
 package eu.valawai.c0.email_sensor;
 
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+
 import eu.valawai.c0.email_sensor.mov.Payload;
 
 /**
@@ -94,6 +97,33 @@ public class EMailAddressPayload extends Payload {
 			}
 			return payload;
 
+		}
+	}
+
+	/**
+	 * Convert an address to a payload.
+	 *
+	 * @param address to convert.
+	 *
+	 * @return the payload associated to the address.
+	 */
+	public static EMailAddressPayload from(Address address) {
+
+		if (address == null) {
+
+			return null;
+
+		} else if (address instanceof final InternetAddress internet) {
+
+			final var payload = new EMailAddressPayload();
+			payload.name = internet.getPersonal();
+			payload.address = internet.getAddress();
+			return payload;
+
+		} else {
+
+			final var value = address.toString().trim();
+			return EMailAddressPayload.decode(value);
 		}
 	}
 
