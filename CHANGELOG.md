@@ -1,5 +1,9 @@
 # C0_email_sensor
 
+## Version 1.4.0 (February 6, 2026)
+
+ - Fix deprecated docker image
+
 
 ## Version 1.3.0 (June 10, 2025)
 
