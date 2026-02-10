@@ -18,8 +18,19 @@ The E-mail sensor (C0) extracts information from e-mails and propagates it to al
 
 ## Usage
 
-This component can be used to read e-mails from a server and propagate them as messages
-in the infrastructure.
+The E-mail Sensor (C0) is a data extraction component that bridges external 
+email communication with the VALAWAI infrastructure. It is used to automatically
+ monitor a mail server, retrieve unread messages, and propagate them as 
+ structured data to other system components.
+
+- **Information Extraction**: The sensor extracts key data from non-read emails, 
+including sender/recipient addresses, subjects, content, and MIME types.
+- **Message Propagation**: Extracted emails are published as messages to 
+the internal infrastructure, allowing other components (such as the LLM 
+Email Replier) to process and respond to them.
+- **Infrastructure Integration**: Like all C0 components, it must register 
+with the Master of VALAWAI (MOV) upon startup to become visible and accessible 
+within the system topology.
 
 ## Deployment
 

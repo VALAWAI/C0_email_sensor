@@ -19,7 +19,6 @@
 		<resources-plugin.version>3.3.1</resources-plugin.version>
 		<jacoco.version>0.8.13</jacoco.version>
 	</properties>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -63,7 +62,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-junit</artifactId>
+			<artifactId>quarkus-junit5</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
