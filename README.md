@@ -9,8 +9,8 @@ The E-mail sensor (C0) extracts information from e-mails and propagates it to al
 - **Name**: E-mail sensor
 - **Documentation**: [https://valawai.github.io/docs/components/C0/email_sensor](https://valawai.github.io/docs/components/C0/email_sensor)
 - **Versions**:
-  - **Stable version**: [1.4.0 (February 6, 2026)](https://github.com/VALAWAI/C0_email_sensor/tree/1.4.0)
-  - **API**: [1.0.0 (March 16, 2024)](https://raw.githubusercontent.com/VALAWAI/C0_email_sensor/ASYNCAPI_1.0.0/asyncapi.yml)
+  - **Stable version**: [1.4.0 (February 19, 2026)](https://github.com/VALAWAI/C0_email_sensor/tree/1.4.0)
+  - **API**: [1.1.0 (February 19, 2026)](https://raw.githubusercontent.com/VALAWAI/C0_email_sensor/ASYNCAPI_1.1.0/asyncapi.yaml)
   - **Required MOV API**: [1.2.0 (March 9, 2024)](https://raw.githubusercontent.com/valawai/MOV/ASYNCAPI_1.2.0/asyncapi.yml)
 - **Developed By**: [IIIA-CSIC](https://www.iiia.csic.es)
 - **License**: [GPL v3](LICENSE)
